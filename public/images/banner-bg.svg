@@ -1,0 +1,31 @@
+<!-- public/images/banner-bg.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+    <!-- Background -->
+    <rect width="1200" height="400" fill="#f3f0ff"/>
+    
+    <!-- Abstract decorative pattern -->
+    <path d="M0 200C200 150 400 250 600 200S800 150 1200 200V400H0Z" fill="#ede9fe" opacity="0.5"/>
+    <path d="M0 250C200 200 400 300 600 250S800 200 1200 250V400H0Z" fill="#ddd6fe" opacity="0.3"/>
+    
+    <!-- Decorative circles -->
+    <circle cx="200" cy="150" r="80" fill="#c4b5fd" opacity="0.1"/>
+    <circle cx="1000" cy="100" r="120" fill="#c4b5fd" opacity="0.1"/>
+    <circle cx="600" cy="300" r="100" fill="#c4b5fd" opacity="0.1"/>
+    
+    <!-- Product showcase area -->
+    <rect x="50" y="50" width="400" height="300" rx="20" fill="#fff" opacity="0.9"/>
+    
+    <!-- Stylized shopping bag icon -->
+    <path d="M150 100 L200 100 L220 150 L130 150 L150 100" fill="#8b5cf6" opacity="0.8"/>
+    <rect x="130" y="150" width="90" height="100" fill="#8b5cf6" opacity="0.8"/>
+    
+    <!-- Decorative lines -->
+    <line x1="300" y1="100" x2="400" y2="100" stroke="#8b5cf6" stroke-width="2" opacity="0.5"/>
+    <line x1="300" y1="120" x2="380" y2="120" stroke="#8b5cf6" stroke-width="2" opacity="0.5"/>
+    <line x1="300" y1="140" x2="420" y2="140" stroke="#8b5cf6" stroke-width="2" opacity="0.5"/>
+    
+    <!-- Floating elements -->
+    <circle cx="800" cy="150" r="30" fill="#8b5cf6" opacity="0.2"/>
+    <circle cx="850" cy="200" r="20" fill="#8b5cf6" opacity="0.2"/>
+    <circle cx="900" cy="150" r="25" fill="#8b5cf6" opacity="0.2"/>
+</svg>
