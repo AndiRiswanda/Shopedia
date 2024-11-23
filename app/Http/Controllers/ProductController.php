@@ -6,8 +6,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\InventoryLog;
 use App\Models\ProductImage;
-use App\Models\StoreProduct;
-use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -43,26 +41,28 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $product = Product::create($validated);
+        $validated['store_id'] = Auth::user()->store->store_id;
 
+        $product = Product::create($validated);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-
+            //Define the storage path
             $storage_path = storage_path('app/public/products');
+            //Check if the directory exists; if not, create it
             if (!file_exists($storage_path)) {
                 mkdir($storage_path, 0755, true);
             }
-
+            //Get the uploaded file from the request
             $file = $request->file('image');
-
+            // Step 4: Generate a unique filename based on the current timestamp and original file name
             $filename = time() . '_' . $file->getClientOriginalName();
-
+            //Move the uploaded file to the defined directory
             $file->move($storage_path, $filename);
-
+            //Store the path to the file in a variable
             $imagePath = 'storage/products/' . $filename;
         }
-
+        
         InventoryLog::create([
             'product_id' => $product->product_id,
             'change_type' => 'Restock',
@@ -75,10 +75,7 @@ class ProductController extends Controller
             'image_url' => $imagePath
         ]);
 
-        StoreProduct::create([
-            'store_id' => Auth::user()->store->store_id,
-            'product_id' => $product->product_id
-        ]);
+
 
 
 
@@ -90,10 +87,14 @@ class ProductController extends Controller
      */
     public function show(Product $product) {
 
+        $product->averageRating = $product->reviews->avg('rating');
+        $reviews = $product->reviews()->paginate(5);
+        return view('product.show', compact(['product','reviews']));
+
     }
 
     public function showSeller(Product $product)
-    {
+    {   
         return view('seller.showProduct', compact('product'));
     }
     /**
@@ -183,9 +184,8 @@ class ProductController extends Controller
         }
         if (Auth::user()->role == 'Seller') {
             return redirect()->route('product.show.seller', ['product' => $product->product_id])->with('success', 'Product updated successfully!');
-        }elseif (Auth::user()->role == 'Admin') {
+        } elseif (Auth::user()->role == 'Admin') {
             return redirect()->route('admin.dashboard')->with('success', 'Product updated successfully!');
-
         }
         return redirect()->route('product.show', ['product' => $product->product_id])->with('success', 'Product updated successfully!');
     }
@@ -197,7 +197,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         // Check if the product has an associated image
-        $image = $product->productImages->first(); // Assuming you have a relationship named productImages
+        $image = $product->productImages->first(); 
 
         if ($image && file_exists(public_path($image->image_url))) {
             // Delete the image from the storage
@@ -211,7 +211,7 @@ class ProductController extends Controller
         if (Auth::user()->role == 'Admin') {
             return redirect()->route('admin.dashboard')->with('success', 'Product deleted successfully!');
         }
-        
+
         return redirect()->route('store.index')
             ->with('status', 'Product and associated image deleted successfully');
     }

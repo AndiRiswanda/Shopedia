@@ -14,6 +14,9 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('product/{product}', [ProductController::class, 'show'])
+->name('product.show');
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
@@ -21,10 +24,10 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::get('seller-register', [StoreController::class, 'create'])
-    ->name('seller-register');
+        ->name('seller-register');
 
     Route::post('seller-register', [StoreController::class, 'store'])
-    ->name('seller-register-store');
+        ->name('seller-register-store');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
@@ -65,6 +68,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -73,23 +78,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/dashboard/edit{id}', [AdminController::class, 'updateUser'])->name('admin.user.update');
     Route::delete('/admin/dashboard/delete/{id}', [AdminController::class, 'destroy'])->name('admin.user.destroy');
 
-        Route::get('admin/dashboard/edit/product/{product}', [ProductController::class,'edit'])
-    ->name('product.edit.admin');
-        Route::put('admin/dashboard/update/product/{product}', [ProductController::class,'update'])
-    ->name('product.update.admin');
-        Route::delete('admin/dashboard/delete/product/{product}', [ProductController::class,'destroy'])
-    ->name('product.destory.admin');
-
-
+    Route::get('admin/dashboard/edit/product/{product}', [ProductController::class, 'edit'])
+        ->name('product.edit.admin');
+    Route::put('admin/dashboard/update/product/{product}', [ProductController::class, 'update'])
+        ->name('product.update.admin');
+    Route::delete('admin/dashboard/delete/product/{product}', [ProductController::class, 'destroy'])
+        ->name('product.destory.admin');
 });
 
 Route::middleware(['auth', 'seller'])->group(function () {
     Route::resource('store', StoreController::class);
-    Route::resource('product', ProductController::class);
-    
-    Route::get('product/{product}', [ProductController::class,'showSeller'])
-    ->name('product.show.seller');
-
-
+    Route::resource('product', ProductController::class)->except(['show']);
+    Route::get('seller/product/{product}', [ProductController::class, 'showSeller'])
+        ->name('product.show.seller');
 });
-

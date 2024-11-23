@@ -1,52 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-shopedia.app>
+    @section('title', Auth::user()->name.' dashboard')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Product - Seller Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-<body class="bg-gray-100">
     <div class="min-h-screen flex flex-col items-center">
         <!-- Header -->
-        <header class="bg-gradient-to-r from-purple-700 to-purple-900 text-white w-full py-4 shadow-lg">
-            <div class="container mx-auto px-6 flex justify-between items-center">
-                <h1 class="text-xl font-bold">Edit Product</h1>
-                <a href="{{ route('store.index') }}"
-                    class="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm">
-                    Back to Dashboard
-                </a>
-            </div>
-        </header>
+        <x-shopedia.product-head :product="$product->product_name" />
+
 
         <!-- Edit Product Form -->
         <main class="container mx-auto px-4 py-6">
             <div class="bg-white rounded-lg shadow-xl p-6 space-y-4">
                 <!-- Title -->
                 <h2 class="text-lg font-bold text-gray-800 mb-4 text-center">Edit Product Details</h2>
-                @if (session('success'))
-                    <div class="container mx-auto px-6 py-4">
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                            role="alert">
-                            <span class="block sm:inline">{{ session('success') }}</span>
-                        </div>
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="container mx-auto px-6 py-4">
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                            role="alert">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                @endif
+               <x-shopedia.alert />
 
                 <form
                     action="{{ auth()->user()->role === 'Admin' ? route('product.update.admin', $product->product_id) : route('product.update', $product->product_id) }}"
@@ -151,13 +116,6 @@
             </div>
         </main>
 
-        <!-- Footer -->
-        <footer class="mt-auto bg-gray-200 text-gray-600 w-full py-2">
-            <div class="container mx-auto px-6 text-center text-sm">
-                © 2024 Seller Dashboard - All Rights Reserved.
-            </div>
-        </footer>
-    </div>
-</body>
 
-</html>
+    </div>
+</x-shopedia.app>

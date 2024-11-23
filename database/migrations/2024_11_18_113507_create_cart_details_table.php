@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('cart_details', function (Blueprint $table) {
             $table->id('cart_detail_id'); // Primary key
-
             $table->integer('quantity'); 
-            $table->decimal('subtotal', 10, 2); //(quantity * product price)
             
             //FK
             $table->foreignId('cart_id')->constrained(

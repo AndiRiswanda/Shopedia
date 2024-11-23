@@ -1,54 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - Seller View</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-<body class="bg-gray-100">
+<x-shopedia.app>
     <div class="min-h-screen flex flex-col items-center">
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-purple-700 to-purple-900 text-white w-full py-6 shadow-lg">
-            <div class="container mx-auto px-6 flex justify-between items-center">
-                <h1 class="text-3xl font-bold">Seller Dashboard</h1>
-                <a href="{{ route('store.index') }}"
-                    class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm">
-                    Back to Dashboard
-                </a>
-            </div>
-        </header>
-        @if (session('success'))
-            <div class="container mx-auto px-6 py-4">
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                    role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="container mx-auto px-6 py-4">
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-        @endif
-
+        <x-shopedia.product-head :product="$product->product_name" />
+        <x-shopedia.alert />
         <!-- Product Details -->
         <main class="container mx-auto px-6 py-10">
+            
             <div class="bg-white rounded-lg shadow-xl p-8 space-y-6">
                 <!-- Product Image and Info -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                     <!-- Product Image -->
                     <div class="col-span-1">
-                        <img src="{{ $product->productImages->first()->image_url }}" alt="Product Image"
+                        <img src="{{ asset($product->productImages->first()->image_url) }}" alt="Product Image"
                             class="w-full rounded-lg shadow-md hover:scale-105 transition-transform duration-300">
                     </div>
 
@@ -110,13 +72,6 @@
             </div>
         </main>
 
-        <!-- Footer -->
-        <footer class="mt-auto bg-gray-200 text-gray-600 w-full py-4">
-            <div class="container mx-auto px-6 text-center">
-                © 2024 Seller Dashboard - All Rights Reserved.
-            </div>
-        </footer>
     </div>
-</body>
 
-</html>
+</x-shopedia.app>

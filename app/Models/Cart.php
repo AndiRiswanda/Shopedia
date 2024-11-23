@@ -10,6 +10,10 @@ class Cart extends Model
     use HasFactory;
     protected $primaryKey = 'cart_id';
     
+    protected $fillable = [
+        'user_id',
+    ];
+
     //realtionship
     public function user()
     {
@@ -18,7 +22,7 @@ class Cart extends Model
     
     public function cartDetails()
     {
-        return $this->hasMany(CartDetail::class, 'cart_detail_id', 'cart_id');
+        return $this->hasMany(CartDetail::class, 'cart_id', 'cart_id');
     }
 
 }

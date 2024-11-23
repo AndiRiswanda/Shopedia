@@ -12,18 +12,21 @@ class Store extends Model
     protected $primaryKey = 'store_id';
     protected $fillable = [
         'store_name',
-        'store_desc'
+        'store_desc',
+        'profile_url',
+        'banner_url',
+        'catch',
     ];
     
     //relationship
     
     public function user()
     {
-        return $this->belongsTo(User::class, 'id', 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function storeProducts()
+    public function products()
     {
-        return $this->hasMany(StoreProduct::class, 'store_id', 'store_id');
+        return $this->hasMany(Product::class, 'store_id', 'store_id');
     }
 }

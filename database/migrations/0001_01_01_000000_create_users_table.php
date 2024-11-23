@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name'); // Name
             $table->string('email')->unique(); // Email
             $table->string('password'); // Password
-            $table->enum('role', ['Buyer', 'Seller', 'Admin']); // Role
+            $table->enum('role', ['Buyer', 'Seller', 'Admin']); // Rolea
+            $table->string('profile_url')->nullable(); 
             $table->timestamp('registration_date')->useCurrent(); // RegistrationDate
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

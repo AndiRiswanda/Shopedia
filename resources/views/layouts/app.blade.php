@@ -59,7 +59,7 @@
             <!-- Footer -->
             <footer class="bg-purple-800 text-white py-4 mt-6">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <p>&copy; {{ date('Y') }} Your Company. All rights reserved.</p>
+                    <p>&copy; {{ date('Y') }} Shopedia. All rights reserved.</p>
                 </div>
             </footer>
         </div>

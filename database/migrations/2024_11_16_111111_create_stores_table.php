@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('stores', function (Blueprint $table) {
             $table->id('store_id'); // Primary key
             $table->string('store_name');
+            $table->string('profile_url'); 
+            $table->string('banner_url')->nullable(); 
+
         
             // Foreign key to users table (Seller)
             $table->foreignId('user_id')->constrained(
@@ -21,6 +24,7 @@ return new class extends Migration
             )->onDelete('cascade');
 
             $table->text('store_desc')->nullable();
+            $table->text('catch')->nullable();
 
             $table->timestamps();
         });

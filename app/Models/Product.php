@@ -14,7 +14,8 @@ class Product extends Model
         'description',
         'price',
         'stock',
-        'category_id'
+        'category_id',
+        'store_id'
     ];
 
     protected $primaryKey = 'product_id';
@@ -52,9 +53,9 @@ class Product extends Model
         return $this->hasMany(Wishlist::class, 'product_id', 'product_id');
     }
 
-    public function storeProduct()
+    public function store()
     {
-        return $this->belongsTo(StoreProduct::class, 'product_id', 'product_id');
+        return $this->belongsTo(Store::class, 'store_id', 'store_id');
     }
-    
+     
 }

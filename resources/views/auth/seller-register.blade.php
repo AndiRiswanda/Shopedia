@@ -62,7 +62,8 @@
 
             <!-- Right Side - Form -->
             <div class="w-full md:w-2/3 p-8">
-                <form method="POST" action="{{ route('seller-register-store') }}" class="h-full flex flex-col">
+                <form method="POST" action="{{ route('seller-register-store') }}" enctype="multipart/form-data"
+                    class="h-full flex flex-col">
                     @csrf
 
                     <!-- Step 1 - Account Details -->
@@ -89,7 +90,7 @@
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email
                                     Address</label>
-                                <input type="email" id="email" name="email" value="{{ old('email') }} "
+                                <input type="email" id="email" name="email" value="{{ old('email') }}"
                                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all duration-300"
                                     required />
                                 @error('email')
@@ -142,13 +143,42 @@
 
                             <!-- Store Description Input -->
                             <div>
-                                <label for="store_desc"
-                                    class="block text-sm font-medium text-gray-700 mb-1">Store
+                                <label for="store_desc" class="block text-sm font-medium text-gray-700 mb-1">Store
                                     Description</label>
                                 <textarea id="store_desc" name="store_desc" rows="4"
                                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all duration-300"
                                     required>{{ old('store_desc') }}</textarea>
                                 @error('store_desc')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Store Banner Upload (Optional) -->
+                            <div>
+                                <label for="store_banner" class="block text-sm font-medium text-gray-700 mb-1">Store
+                                    Banner (Optional)</label>
+                                <div class="flex items-center space-x-4">
+                                    <label class="flex-grow">
+                                        <input type="file" id="store_banner" name="store_banner" accept="image/*"
+                                            class="hidden" onchange="updateBannerLabel()" />
+                                        <span id="banner-label"
+                                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all duration-300 block cursor-pointer text-gray-500">
+                                            Choose Banner Image
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Store Profile Picture Upload (Required) -->
+                            <div>
+                                <label for="store_profile_pic"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Store Profile Picture
+                                    (Required)</label>
+                                <input type="file" id="store_profile_pic" name="store_profile_pic"
+                                    accept="image/*"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all duration-300"
+                                    required />
+                                @error('store_profile_pic')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -177,6 +207,12 @@
     <script>
         document.getElementById('next-btn').addEventListener('click', function() {
             if (document.getElementById('next-btn').type === 'submit') {
+                // Validate profile picture
+                const profilePic = document.getElementById('store_profile_pic');
+                if (!profilePic.files.length) {
+                    alert('Store profile picture is required');
+                    return;
+                }
                 // Manually submit the form
                 document.querySelector('form').submit();
             } else {
@@ -208,5 +244,12 @@
             document.getElementById('next-btn').type = 'button';
             document.getElementById('next-btn').textContent = 'Next';
         });
+
+        function updateBannerLabel() {
+        const bannerInput = document.getElementById('store_banner');
+        const bannerLabel = document.getElementById('banner-label');
+        const fileName = bannerInput.files.length ? bannerInput.files[0].name : 'Choose Banner Image';
+        bannerLabel.textContent = fileName;
+    }
     </script>
 </x-guest-layout>

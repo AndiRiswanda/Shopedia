@@ -23,7 +23,11 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained(
                 table: 'categories', column: 'category_id', indexName: 'products_category_id'
             )->onDelete('cascade');
-            
+
+            $table->foreignId('store_id')->constrained(
+                table: 'stores', column: 'store_id', indexName: 'stores_product_id'
+            )->onDelete('cascade');
+
             $table->timestamps();
             
         });

@@ -27,28 +27,32 @@ class DatabaseSeeder extends Seeder
             ReviewSeeder::class,
             WishlistSeeder::class
         ]);
-                    //Product count
+        //Product count
         $productGenerated = 20;
         $products = Product::factory($productGenerated)->create();
-        
+
         $products->each(function ($product) {
 
-            Review::factory(max(2, rand(2, 4)))->create([
+            Review::factory(max(2, rand(3, 1000)))->create([
                 'product_id' => $product->product_id,
-                'user_id' => User::query()->inRandomOrder()->value('id') ?? User::factory()
+                'user_id' => User::query()
+                    ->where('id', '!=', 1) // Exclude user_id 1
+                    ->inRandomOrder()
+                    ->value('id') ?? User::factory()
             ]);
+
 
             ProductImage::factory(max(2, rand(2, 4)))->create([
                 'product_id' => $product->product_id
             ]);
 
-            CartDetail::factory(2)->create([
-                'cart_id' => Cart::query()->inRandomOrder()->value('cart_id') ?? Cart::factory(),
-                'product_id' => $product->product_id
-            ]);
+            // CartDetail::factory(2)->create([
+            //     'cart_id' => Cart::query()->inRandomOrder()->value('cart_id') ?? Cart::factory(),
+            //     'product_id' => $product->product_id
+            // ]);
 
-            
-            
+
+
         });
     }
 }
