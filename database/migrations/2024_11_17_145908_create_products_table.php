@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('product_name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
-
             $table->integer('stock')->default(0);
+            $table->integer('sold')->default(0);
             
             //FK
             $table->foreignId('category_id')->constrained(
@@ -30,7 +30,7 @@ return new class extends Migration
 
             $table->timestamps();
             
-        });
+        }); 
         
     }
 

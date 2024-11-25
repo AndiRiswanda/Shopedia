@@ -13,6 +13,7 @@ class Product extends Model
         'product_name',
         'description',
         'price',
+        'sold',
         'stock',
         'category_id',
         'store_id'
@@ -58,4 +59,8 @@ class Product extends Model
         return $this->belongsTo(Store::class, 'store_id', 'store_id');
     }
      
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'product_id', 'product_id');
+    }
 }

@@ -71,9 +71,6 @@
                     @forelse($cart->cartDetails as $detail)
                     <div class="py-6 border-b border-gray-100 cart-item-hover rounded-xl my-4 p-4">
                         <div class="flex items-start space-x-6">
-                            <div class="w-6 h-6 rounded-lg border-2 border-purple-300 flex items-center justify-center mt-2 cursor-pointer hover:border-purple-500 transition-colors">
-                                <input type="checkbox" class="w-4 h-4 rounded border-purple-300 text-purple-600 focus:ring-purple-500">
-                            </div>
                             <img src="{{ $detail->product->productImages->first()->image_url ?? 'https://via.placeholder.com/120' }}" 
                                  alt="{{ $detail->product->product_name }}" 
                                  class="w-32 h-32 object-cover rounded-xl shadow-md">
@@ -122,7 +119,7 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
-                                <a href="#" class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200">
+                                <a href="{{ route('product.show', $detail->product->product_id) }}" class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                             </div>
@@ -166,17 +163,7 @@
                             <span class="text-green-600 font-medium">Free</span>
                         </div>
                         
-                        <!-- Voucher Input -->
-                        <div class="pt-6">
-                            <div class="flex space-x-3">
-                                <input type="text" 
-                                       placeholder="Enter voucher code" 
-                                       class="flex-1 px-5 py-3 border-2 border-purple-100 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-50">
-                                <button class="px-6 py-3 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100 transition-all duration-200 font-medium">
-                                    Apply
-                                </button>
-                            </div>
-                        </div>
+                      
                         
                         <!-- Total -->
                         <div class="pt-6 border-t border-gray-100">
@@ -192,10 +179,13 @@
                     </div>
                     
                     <!-- Checkout Button -->
-                    <button class="w-full mt-8 px-8 py-4 purple-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 font-medium">
-                        <span>Proceed to Checkout</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
+                    <form action="{{ route('cart.checkout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="w-full mt-8 px-8 py-4 purple-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 font-medium">
+                            <span>Proceed to Checkout</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
                     
                     <!-- Continue Shopping -->
                     <a href="{{ route('Home') }}" 

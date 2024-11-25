@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\CartDetail;
+use App\Models\Order;
+use App\Models\Orderdetail;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -108,5 +111,49 @@ class CartController extends Controller
     public function destroy(Cart $cart)
     {
         //
+    }
+
+    public function checkout(Request $request)
+    {
+        $cart = Auth::user()->carts;
+        $total = 0;
+
+        // Calculate total and create order
+        $order = Order::create([
+            'user_id' => Auth::user()->id,
+            'total' => 0,
+        ]);
+
+        // Process each cart item
+        foreach($cart->cartDetails as $item) {
+            // Create order detail
+            OrderDetail::create([
+                'order_id' => $order->order_id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+            ]);
+
+            $total += ($item->quantity * $item->product->price);
+
+            // Update product stock
+            $product = Product::find($item->product_id);
+            $product->decrement('stock', $item->quantity);
+
+            // Delete cart item
+            $item->delete();
+        }
+
+        // Update order total
+        $order->update(['total' => $total]);
+
+        // Notification to store owner
+        $storeIds = $order->orderDetail->pluck('product.store_id')->unique();
+        foreach($storeIds as $storeId) {
+            $store = Store::find($storeId);
+            // Add notification logic here
+            // You can create a notifications table and model for this
+        }
+
+        return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
     }
 }

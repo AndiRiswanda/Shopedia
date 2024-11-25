@@ -18,8 +18,10 @@ class AdminController extends Controller
         $products = Product::with('Category')->get();
         $categories = Category::all();
         $stores = Store::all();
+        $revenue = Product::sum('price'); // calculation for revenue
+        $newOrders = 567; //value for new orders
 
-        return view('admin.dashboard', compact('users', 'products', 'categories', 'stores'));
+        return view('admin.dashboard', compact('users', 'products', 'categories', 'stores', 'revenue', 'newOrders'));
     }
 
     public function editUser($id)

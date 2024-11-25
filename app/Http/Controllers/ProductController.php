@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\InventoryLog;
 use App\Models\ProductImage;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,7 +39,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0|max:99999999',
             'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,category_id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240', //10 MB
         ]);
 
         $validated['store_id'] = Auth::user()->store->store_id;
@@ -62,7 +63,7 @@ class ProductController extends Controller
             //Store the path to the file in a variable
             $imagePath = 'storage/products/' . $filename;
         }
-        
+
         InventoryLog::create([
             'product_id' => $product->product_id,
             'change_type' => 'Restock',
@@ -85,16 +86,16 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product) {
+    public function show(Product $product)
+    {
 
         $product->averageRating = $product->reviews->avg('rating');
         $reviews = $product->reviews()->paginate(5);
-        return view('product.show', compact(['product','reviews']));
-
+        return view('product.show', compact(['product', 'reviews']));
     }
 
     public function showSeller(Product $product)
-    {   
+    {
         return view('seller.showProduct', compact('product'));
     }
     /**
@@ -118,8 +119,8 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0|max:99999999',
             'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,category_id',
-            'image' => 'nullable|array|max:5', // Ensure it's an array and max 5 images
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg|max:10240', // Validate each image
+            'image' => 'nullable|array|max:5', // Max 5 images
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg|max:10240', // Validate each
         ]);
         $oldStock = $product->stock;
 
@@ -131,19 +132,14 @@ class ProductController extends Controller
             'category_id' => $validated['category_id'],
         ]);
 
-        // Handle image uploads if any
+        // Handle images
         if ($request->hasFile('image')) {
-            // Delete existing images if needed
+            // Delete old images
             foreach ($product->productImages as $image) {
-                // Remove the 'storage/' part from the URL
                 $imagePath = public_path(str_replace('storage/', 'storage/app/public/', $image->image_url));
-
-                // Check if the file exists and delete it
                 if (file_exists($imagePath)) {
                     unlink($imagePath);
                 }
-
-                // Delete the image record from the database
                 $image->delete();
             }
 
@@ -155,7 +151,7 @@ class ProductController extends Controller
                 $imagePaths[] = 'storage/products/' . $filename;
             }
 
-            // Save the new image URLs to the database
+            // Save new URLs
             foreach ($imagePaths as $path) {
                 ProductImage::create([
                     'product_id' => $product->product_id,
@@ -163,7 +159,6 @@ class ProductController extends Controller
                 ]);
             }
         }
-
 
         $stockChange = $validated['stock'] - $oldStock;
 
@@ -190,29 +185,35 @@ class ProductController extends Controller
         return redirect()->route('product.show', ['product' => $product->product_id])->with('success', 'Product updated successfully!');
     }
 
+    public function showStore(Store $store) {
+        return view('product.showStore', compact('store'));
+    }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Product $product)
     {
-        // Check if the product has an associated image
-        $image = $product->productImages->first(); 
+        // check gambar product
+        $image = $product->productImages->first();
 
-        if ($image && file_exists(public_path($image->image_url))) {
+        if ($image !== null && file_exists(public_path($image->image_url))) {
             // Delete the image from the storage
             unlink(public_path($image->image_url));
         }
 
-        // Now delete the product
+        
         $product->delete();
 
-        // Redirect with success message
-        if (Auth::user()->role == 'Admin') {
-            return redirect()->route('admin.dashboard')->with('success', 'Product deleted successfully!');
-        }
+        
+        $redirectRoutes = [
+            'Admin' => 'admin.dashboard',
+            'Seller' => 'store.index',
+        ];
 
-        return redirect()->route('store.index')
-            ->with('status', 'Product and associated image deleted successfully');
+        $role = Auth::user()->role;
+        $route = $redirectRoutes[$role] ?? 'store.index';
+
+        return redirect()->route($route)->with('success', 'Product deleted successfully!');
     }
 }

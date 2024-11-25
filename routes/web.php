@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,8 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('cart', CartController::class);
     Route::patch('/cart/increment/{cartDetail}', [CartController::class, 'incrementItem'])->name('cart.incrementItem');
     Route::patch('/cart/decrement/{cartDetail}', [CartController::class, 'decrementItem'])->name('cart.decrementItem');
-    Route::delete('/cart/{cartDetail}', [CartController::class, 'removeItem'])->name('cart.removeItem');
-
+    Route::delete('/cart/remove/{cartDetail}', [CartController::class, 'removeItem'])->name('cart.removeItem');
+    Route::resource('wishlist', WishlistController::class);
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 });
 
 

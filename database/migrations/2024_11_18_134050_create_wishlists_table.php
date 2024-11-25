@@ -16,13 +16,13 @@ return new class extends Migration
 
             $table->foreignId('user_id')->constrained(
                 table: 'users', column: 'id', indexName: 'wishlist_user_id'
-            )->onDelete('cascade'); // Foreign key to users table
+            )->onDelete('cascade'); // Foreign key to users
 
             $table->foreignId('product_id')->constrained(
                 table: 'products', column: 'product_id', indexName: 'wishlist_product_id'
-            )->onDelete('cascade'); // Foreign key to products table
+            )->onDelete('cascade'); // Foreign key to products
 
-            $table->unique(['user_id', 'product_id']); // Composite unique key to prevent duplicate wishlist entries
+            $table->unique(['user_id', 'product_id']); // Make sure unique
 
             $table->timestamps();
         });

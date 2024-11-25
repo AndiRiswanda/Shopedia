@@ -6,6 +6,7 @@ use App\Models\Store;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Cart;
+use App\Models\Orderdetail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,8 +21,16 @@ class StoreController extends Controller
     {
         $store = Auth::user()->store;
         $products = $store->products;
+        $orders = collect();
+        
+        foreach ($products as $product) {
+            foreach ($product->orderDetails as $orderDetail) {
+                $orders->push($orderDetail->order);
+            }
+        }
+
         $category = Category::all();
-        return view('seller.dashboard', compact('store','category', 'products'));
+        return view('seller.dashboard', compact('orders', 'store', 'category', 'products'));
     }
 
     /**
@@ -41,7 +50,7 @@ class StoreController extends Controller
             'password' => 'required|string|confirmed|min:8',
             'store_name' => 'required|string|max:255',
             'store_desc' => 'required|string|max:255',
-            'store_profile_pic' => 'required|image|max:10240', // 2MB 
+            'store_profile_pic' => 'required|image|max:10240', // 10MB 
             'store_banner' => 'nullable|image|max:10240', // Optional, 
         ]);
 

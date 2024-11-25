@@ -37,6 +37,8 @@
         </div>
     </div>
 
+    <x-shopedia.alert />
+
     <!-- Main Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Product Section -->
@@ -44,16 +46,30 @@
             <div class="md:flex">
                 <!-- Image Gallery Section -->
                 <div class="md:w-1/2 p-6">
-                    <div class="relative h-96 rounded-xl overflow-hidden mb-4">
+                    <div class="relative h-96 rounded-xl overflow-hidden mb-4 group">
                         <!-- Main product image -->
                         <img src="{{ asset($product->productImages->first()->image_url ?? '/default-image.jpg') }}"
                             alt="Main product" class="w-full h-full object-cover">
-                        <button
-                            class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg hover:bg-purple-100 transition-colors">
-                            <i class="fas fa-heart text-purple-600"></i>
-                        </button>
+                        @if (Auth::user())
+                            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                <form action="{{ route('wishlist.store') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+                                    <button type="submit" 
+                                        class="bg-white p-2 rounded-full shadow-lg hover:bg-purple-100 transition-colors">
+                                        <i class="fas fa-heart text-purple-600"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                <a href="{{ route('login') }}"
+                                    class="bg-white p-2 rounded-full shadow-lg hover:bg-purple-100 transition-colors">
+                                    <i class="fas fa-heart text-purple-600"></i>
+                                </a>
+                            </div>
+                        @endif
                     </div>
-
                     <!-- if multiple images -->
                     @if ($product->productImages->count() > 1)
                         <div class="grid grid-cols-4 gap-4">
@@ -99,18 +115,35 @@
 
                         <!-- Store Banner -->
                         <div class="mb-4">
-                            <img src="{{ asset('storage/' . $product->store->banner_url) }}"
-                                alt="{{ $product->store->store_name ?? 'Store Banner' }}"
-                                class="w-full h-32 object-cover rounded-lg">
+                            <a href="{{ route('store.show', $product->store) }}">
+                                <img src="{{ asset('storage/' . $product->store->banner_url) }}"
+                                    alt="{{ $product->store->store_name ?? 'Store Banner' }}"
+                                    class="w-full h-32 object-cover rounded-lg hover:opacity-90 transition-opacity">
+                            </a>
                         </div>
 
                         <!-- Store Name and Link -->
                         <div class="space-y-2 text-sm text-gray-600">
                             <div class="flex items-center justify-between">
-                                <h4 class="font-semibold text-lg text-purple-600">
-                                    {{ $product->store->store_name ?? 'Store Name' }}
-                                </h4>
-                                <a href="#"
+                                <div class="flex items-center space-x-3">
+                                    <a href="{{ route('product.show.store', $product->store) }}" class="w-12 h-12 rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                                        @if ($product->store->profile_url)
+                                            <img src="{{ asset('storage/' . $product->store->profile_url) }}"
+                                                alt="{{ $product->store->store_name }}"
+                                                class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full bg-purple-200 flex items-center justify-center">
+                                                <span class="text-purple-600 font-medium">
+                                                    {{ strtoupper(substr($product->store->store_name, 0, 2)) }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </a>
+                                    <h4 class="font-semibold text-lg text-purple-600">
+                                        {{ $product->store->store_name ?? 'Store Name' }}
+                                    </h4>
+                                </div>
+                                <a href="{{ route('product.show.store', $product->store) }}"
                                     class="bg-white text-purple-600 px-6 py-2 rounded-lg font-medium hover:bg-purple-100 transition-colors flex items-center space-x-2">
                                     <i class="fas fa-shopping-bag"></i>
                                     <span>Visit Store</span>
@@ -121,11 +154,24 @@
 
 
                     <!-- Add to Cart Button -->
-                    <button
-                        class="w-full bg-purple-600 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transform hover:scale-[1.02] transition-all duration-300 mb-4 flex items-center justify-center space-x-2">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Add to Cart</span>
-                    </button>
+                    @if (Auth::user())
+                        <form action="{{ route('cart.update', ['cart' => Auth::user()->carts]) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+                            <button type="submit"
+                                class="w-full bg-purple-600 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transform hover:scale-[1.02] transition-all duration-300 mb-4 flex items-center justify-center space-x-2">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Add to Cart</span>
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}"
+                            class="w-full bg-purple-600 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transform hover:scale-[1.02] transition-all duration-300 mb-4 flex items-center justify-center space-x-2">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Add to Cart</span>
+                        </a>
+                    @endif
 
                     <!-- Delivery Info -->
                     <div class="space-y-4 border-t pt-6">

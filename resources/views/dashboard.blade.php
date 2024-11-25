@@ -17,8 +17,8 @@
                         <a href="#" class="block px-4 py-3 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition">
                             My Orders
                         </a>
-                        @if (Auth::user()->roles == 'Buyer')
-                        <a href="#" class="block px-4 py-3 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition">
+                        @if (Auth::user()->role == 'Buyer')
+                        <a href="{{route('wishlist.index')}}" class="block px-4 py-3 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition">
                             Wishlist
                         </a>
                         @else
@@ -26,8 +26,8 @@
                             Edit Store
                         </a>
                         @endif
-                        @if (Auth::user()->roles == 'Buyer')
-                        <a href="#" class="block px-4 py-3 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition">
+                        @if (Auth::user()->role == 'Buyer')
+                        <a href="{{ route('cart.index') }}" class="block px-4 py-3 bg-purple-100 text-purple-800 rounded-lg hover:bg-purple-200 transition">
                             My Cart
                         </a>
                         @else

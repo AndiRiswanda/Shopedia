@@ -12,8 +12,18 @@ use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
-
     protected static ?string $password;
+
+    private function getDefaultStorePic()
+    {
+        return 'store_profile_pics/DEFAULT DONT DELETE THIS PLEASE.png';
+    }
+
+    private function getDefaultBanner()
+    {
+        return 'store_banners/DEFAULT DONT DELETE THIS PLEASE.jpg';
+    }
+
     /**
      * Run the database seeds.
      */
@@ -32,13 +42,17 @@ class UserSeeder extends Seeder
             );
         });
 
-        User::create([
+        $admin = User::create([
             'name' => 'ImTheAdmin',
             'email' => 'adminadmingod@gmail.com',
             'email_verified_at' => now(),
             'role' => 'Admin',
             'password' => Hash::make('admin'),
             'remember_token' => Str::random(10),
+        ]);
+
+        Cart::create([
+            'user_id' => $admin->id,
         ]);
 
         
@@ -73,8 +87,8 @@ class UserSeeder extends Seeder
             'store_name' => 'Samsung Indonesia',
             'store_desc' => 'Indonesia Best Electronics.',
             'user_id' => $user->id,
-            'profile_url' => 'store_profile_pics/DEFAULT DONT DELETE THIS PLEASE.jpg',
-            'banner_url' => 'store_banners/DEFAULT DONT DELETE THIS PLEASE.jpg'
+            'profile_url' => $this->getDefaultStorePic(),
+            'banner_url' => $this->getDefaultBanner()
         ]);
 
         $user2 = User::create([
@@ -95,8 +109,8 @@ class UserSeeder extends Seeder
             'store_desc' => 'Indonesia Second Best Electronics. Lets goo buy it now people we def not scamming yall',
             'user_id' => $user2->id,
             'catch' => 'Indonesia Second Best Electronics.',
-            'profile_url' => 'store_profile_pics/DEFAULT DONT DELETE THIS PLEASE.jpg',
-            'banner_url' => 'store_banners/DEFAULT DONT DELETE THIS PLEASE.jpg'
+            'profile_url' => $this->getDefaultStorePic(),
+            'banner_url' => $this->getDefaultBanner()
         ]);
 
         

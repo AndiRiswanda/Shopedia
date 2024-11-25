@@ -12,10 +12,13 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('product/{product}', [ProductController::class, 'show'])
 ->name('product.show');
+Route::get('product/store/{store}', [ProductController::class, 'showStore'])
+->name('product.show.store');
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -91,4 +94,5 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::resource('product', ProductController::class)->except(['show']);
     Route::get('seller/product/{product}', [ProductController::class, 'showSeller'])
         ->name('product.show.seller');
+    Route::get('store/orders/{order}', [OrderController::class, 'showSeller'])->name('order.show.seller');
 });

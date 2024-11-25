@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
 
         $products->each(function ($product) {
 
-            Review::factory(max(2, rand(3, 1000)))->create([
+            Review::factory(max(2, rand(3, 10)))->create([
                 'product_id' => $product->product_id,
                 'user_id' => User::query()
                     ->where('id', '!=', 1) // Exclude user_id 1
