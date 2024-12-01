@@ -7,7 +7,7 @@ use App\Models\Product;
 use App\Models\CartDetail;
 use App\Models\Order;
 use App\Models\Orderdetail;
-use App\Models\Store;
+use App\Models\InventoryLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -113,18 +113,18 @@ class CartController extends Controller
         //
     }
 
-    public function checkout(Request $request)
+    public function checkout()
     {
         $cart = Auth::user()->carts;
         $total = 0;
 
-        // Calculate total and create order
+        // create order
         $order = Order::create([
             'user_id' => Auth::user()->id,
             'total' => 0,
         ]);
 
-        // Process each cart item
+        
         foreach($cart->cartDetails as $item) {
             // Create order detail
             OrderDetail::create([
@@ -135,25 +135,62 @@ class CartController extends Controller
 
             $total += ($item->quantity * $item->product->price);
 
-            // Update product stock
+            // Update
             $product = Product::find($item->product_id);
             $product->decrement('stock', $item->quantity);
+            InventoryLog::create([
+                'product_id' => $product->product_id,
+                'change_type' => 'Sold',
+                'quantity_chance' => $item->quantity,
+            ]);
 
-            // Delete cart item
+            // clean
             $item->delete();
         }
 
-        // Update order total
         $order->update(['total' => $total]);
 
-        // Notification to store owner
-        $storeIds = $order->orderDetail->pluck('product.store_id')->unique();
-        foreach($storeIds as $storeId) {
-            $store = Store::find($storeId);
-            // Add notification logic here
-            // You can create a notifications table and model for this
-        }
 
         return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
     }
+
+    public function markAsShipped(Order $order)
+    {
+        $storeId = Auth::user()->store->store_id;
+
+        $orderProducts = $order->orderDetail->pluck('product.store_id')->unique();
+
+        if (!$orderProducts->contains($storeId)) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+
+        foreach ($order->orderDetail as $detail) {
+            if ($detail->product->store_id == $storeId) {
+                $detail->update(['status' => 'Shipped']);
+            }
+        }
+
+        return back()->with('success', 'Order marked as shipped.');
+    }
+
+    
+    public function markAsDelivered(Order $order,$storeId) 
+    {
+
+        if ($order->user_id !== Auth::id()) {
+            return back()->with('error', 'Unauthorized action.');
+        }
+        
+        $storeOrderDetails = $order->orderDetail->where('product.store_id', $storeId);
+        if ($storeOrderDetails->contains('status', '!=', 'Shipped')) {
+            return back()->with('error', 'Order must be shipped before marking as delivered.');
+        }
+
+        foreach ($storeOrderDetails as $detail) {
+            $detail->update(['status' => 'Delivered']);
+        }
+
+        return back()->with('success', 'Order marked as delivered.');
+    }
+
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\order;
+use App\Models\Orderdetail;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,18 +13,19 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (Auth::user()->role === 'Seller') {
-            $storeId = Auth::user()->store->store_id;
-            $orders = Order::whereHas('orderDetail.product', function($query) use ($storeId) {
-                $query->where('store_id', $storeId);
-            })->paginate(10);
-        } else {
-            $orders = Auth::user()->orders->paginate(10);
-        }
+        $query = Order::where('user_id', Auth::user()->id);
         
-        return view('orders.index', compact('orders'));
+        if ($request->filter && $request->filter !== 'All') {
+            $query->whereHas('orderDetail', function($q) use ($request) {
+                $q->where('status', $request->filter);
+            });
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->get();
+        
+        return view('order.showBuyer', compact('orders'));
     }
 
     /**
@@ -51,12 +54,31 @@ class OrderController extends Controller
         }
         return view('order.show', compact('order'));
     }
-    public function showSeller(order $order)
+    
+    public function showSeller(Store $store)
+
     {
-        if ($order->user_id !== Auth::id() && Auth::user()->role == 'Seller') {
+        if ($store->user_id !== Auth::id() && Auth::user()->role !== 'Seller') {
             abort(403);
         }
-        return view('order.showSeller', compact('order'));
+
+        $store = Auth::user()->store;
+        $products = $store->products;
+        $productIds = $products->pluck('product_id');
+        $orders = collect();
+        
+        $newOrders = Orderdetail::whereIn('product_id', $productIds)->count();
+        $processingOrders = Orderdetail::whereIn('product_id', $productIds)->where('status', 'Processing')->count();
+        $shippedOrders = Orderdetail::whereIn('product_id', $productIds)->where('status', 'Shipped')->count();
+        $completedOrders = Orderdetail::whereIn('product_id', $productIds)->where('status', 'Completed')->count();
+        
+        $orderDetails = Orderdetail::whereIn('product_id', $productIds)->get();
+        foreach ($orderDetails as $orderDetail) {
+            $orders->push($orderDetail->order);
+        }
+        $orders = $orders->unique();
+
+        return view('order.showSeller', compact('orders', 'newOrders', 'processingOrders', 'shippedOrders', 'completedOrders'));
     }
 
     /**

@@ -1,6 +1,6 @@
 @props(['user', 'store'])
 
-<header class="bg-white shadow-lg">
+<header class="bg-white">
     <div class="container mx-auto px-6 py-4 flex items-center justify-between">
         <div class="flex items-center space-x-4">
             <a href="{{ route('dashboard') }}" class="h-12 w-12 md:h-16 md:w-16 rounded-full bg-gray-200 overflow-hidden shadow block">

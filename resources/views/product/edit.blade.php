@@ -99,7 +99,7 @@
                             <p class="text-xs text-gray-600 mb-2">Current Images:</p>
                             <div class="flex space-x-2">
                                 @foreach ($product->productImages as $image)
-                                    <img src="{{ asset($image->image_url) }}" alt="Product Image"
+                                    <img src="{{ $image->image_url }}" alt="Product Image"
                                         class="w-20 h-20 object-cover rounded-md mx-auto">
                                 @endforeach
                             </div>

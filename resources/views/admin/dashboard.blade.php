@@ -85,7 +85,6 @@
                             </svg>
                         </div>
                         <div class="text-3xl font-bold text-purple-600">{{ $users->count() }}</div>
-                        <div class="text-sm text-green-600 mt-2">+12.5% this month</div>
                     </div>
                     <div class="bg-white shadow-md rounded-xl p-6 border border-gray-100 hover:shadow-xl transition-all">
                         <div class="flex justify-between items-center mb-4">
@@ -98,11 +97,10 @@
                             </svg>
                         </div>
                         <div class="text-3xl font-bold text-purple-600">${{ number_format($revenue, 2) }}</div>
-                        <div class="text-sm text-green-600 mt-2">+15.2% this month</div>
                     </div>
                     <div class="bg-white shadow-md rounded-xl p-6 border border-gray-100 hover:shadow-xl transition-all">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold text-gray-700">New Orders</h3>
+                            <h3 class="text-lg font-semibold text-gray-700">Order Count</h3>
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                 class="text-purple-500">
@@ -112,7 +110,6 @@
                             </svg>
                         </div>
                         <div class="text-3xl font-bold text-purple-600">{{ $newOrders }}</div>
-                        <div class="text-sm text-green-600 mt-2">+8.3% this month</div>
                     </div>
                 </section>
 
@@ -200,32 +197,63 @@
                             </thead>
                             <tbody>
                                 @foreach ($products as $product)
-                                    <tr class="border-b hover:bg-gray-50 transition-all">
-                                        <td class="px-4 py-3">{{ $product->product_id }}</td>
-                                        <td class="px-4 py-3">{{ $product->product_name }}</td>
-                                        <td class="px-4 py-3">${{ number_format($product->price, 2) }}</td>
-                                        <td class="px-4 py-3 text-center">
-                                            <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">
-                                                {{ $product->category->category_name }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3 flex justify-center space-x-4">
-                                            <!-- Edit Button -->
-                                            <a href="{{ route('product.edit.admin', ['product' => $product->product_id]) }}" 
+                                <tr class="border-b hover:bg-gray-50 transition-all">
+                                    <td class="px-4 py-3">{{ $product->product_id }}</td>
+                                    <td class="px-4 py-3">{{ $product->product_name }}</td>
+                                    <td class="px-4 py-3">${{ number_format($product->price, 2) }}</td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">
+                                            {{ $product->category->category_name }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 flex justify-center space-x-4">
+                                        <button onclick="openModal('modal-{{ $product->product_id }}')" 
                                                 class="text-indigo-600 hover:underline">
-                                                Edit
-                                            </a>
-                                            <!-- Delete Button -->
-                                            <form action="{{ route('product.destory.admin', ['product' => $product->product_id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:underline">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                            Show Detail
+                                        </button>
+                                    </td>
+                                </tr>
+                            
+                                <!-- Modal -->
+                                <div id="modal-{{ $product->product_id }}" 
+                                     class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden items-center justify-center z-50">
+                                    <div class="bg-white p-8 rounded-lg shadow-xl max-w-lg w-full mx-4">
+                                        <div class="flex justify-between items-center mb-6">
+                                            <h3 class="text-xl font-semibold text-gray-900">Product Details</h3>
+                                            <button onclick="closeModal('modal-{{ $product->product_id }}')" 
+                                                    class="text-gray-400 hover:text-gray-500">
+                                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700">Product ID</label>
+                                                <div class="mt-1 text-gray-900">{{ $product->product_id }}</div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700">Product Name</label>
+                                                <div class="mt-1 text-gray-900">{{ $product->product_name }}</div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700">Price</label>
+                                                <div class="mt-1 text-gray-900">${{ number_format($product->price, 2) }}</div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700">Category</label>
+                                                <div class="mt-1 text-gray-900">{{ $product->category->category_name }}</div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700">Description</label>
+                                                <div class="mt-1 text-gray-900">{{ $product->description }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                            </tbody>
+                            
                             </tbody>
                             
                         </table>
@@ -238,15 +266,20 @@
     <!-- Chart.js Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Get data from PHP
+            const months = @json($months);
+            const userData = @json($userData);
+            const revenueData = @json($revenueData);
+        
             // User Growth Chart
             var ctx1 = document.getElementById('userGrowthChart').getContext('2d');
             var userGrowthChart = new Chart(ctx1, {
                 type: 'line',
                 data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                    labels: months,
                     datasets: [{
-                        label: 'Users',
-                        data: [120, 190, 300, 500, 200, 300],
+                        label: 'New Users',
+                        data: userData,
                         backgroundColor: 'rgba(139, 92, 246, 0.2)',
                         borderColor: 'rgba(139, 92, 246, 1)',
                         borderWidth: 1
@@ -261,16 +294,16 @@
                     }
                 }
             });
-
+        
             // Revenue Trends Chart
             var ctx2 = document.getElementById('revenueTrendsChart').getContext('2d');
             var revenueTrendsChart = new Chart(ctx2, {
                 type: 'bar',
                 data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                    labels: months,
                     datasets: [{
-                        label: 'Revenue',
-                        data: [3000, 4000, 3200, 5000, 4200, 5300],
+                        label: 'Revenue ($)',
+                        data: revenueData,
                         backgroundColor: 'rgba(139, 92, 246, 0.2)',
                         borderColor: 'rgba(139, 92, 246, 1)',
                         borderWidth: 1
@@ -287,70 +320,24 @@
             });
         });
 
-        function performSearch() {
-            const searchQuery = document.getElementById('userSearch').value.toLowerCase();
-            const userRows = document.querySelectorAll('table tbody tr');
-            
-            userRows.forEach(row => {
-                const userName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                const userEmail = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-                const userRole = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-                
-                const showRow = userName.includes(searchQuery) || 
-                               userEmail.includes(searchQuery) || 
-                               userRole.includes(searchQuery);
-                
-                row.style.display = showRow ? '' : 'none';
-            });
-        }
-    
-        // Handle form submission
-        document.getElementById('userSearchForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            performSearch();
-        });
-    
-        // Real-time search as typing (optional)
-        document.getElementById('userSearch').addEventListener('keyup', performSearch);
-
-        function performUserSearch() {
-            const searchQuery = document.getElementById('userSearch').value.toLowerCase();
-            const userRows = document.querySelectorAll('table tbody tr');
-            
-            userRows.forEach(row => {
-                const userName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                const userEmail = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-                const userRole = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-                
-                const showRow = userName.includes(searchQuery) || 
-                               userEmail.includes(searchQuery) || 
-                               userRole.includes(searchQuery);
-                
-                row.style.display = showRow ? '' : 'none';
-            });
-        }
-
-        function performProductSearch() {
-            const searchQuery = document.getElementById('productSearch').value.toLowerCase();
-            const productRows = document.querySelectorAll('table tbody tr');
-            
-            productRows.forEach(row => {
-                const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                const productCategory = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
-                
-                const showRow = productName.includes(searchQuery) || 
-                               productCategory.includes(searchQuery);
-                
-                row.style.display = showRow ? '' : 'none';
-            });
-        }
-
-        // Real-time search as typing for user search
-        document.getElementById('userSearch').addEventListener('keyup', performUserSearch);
-
-        // Real-time search as typing for product search
-        document.getElementById('productSearch').addEventListener('keyup', performProductSearch);
-    </script>
+        function openModal(modalId) {
+                                document.getElementById(modalId).classList.remove('hidden');
+                                document.getElementById(modalId).classList.add('flex');
+                                document.body.style.overflow = 'hidden';
+                            }
+                            
+                            function closeModal(modalId) {
+                                document.getElementById(modalId).classList.add('hidden');
+                                document.getElementById(modalId).classList.remove('flex');
+                                document.body.style.overflow = 'auto';
+                            }
+                            
+                            window.onclick = function(event) {
+                                if (event.target.classList.contains('fixed')) {
+                                    closeModal(event.target.id);
+                                }
+                            }
+        </script>
 </body>
 
 </html>

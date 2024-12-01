@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Store;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -14,14 +15,58 @@ class AdminController extends Controller
 {
     public function index()
     {
+
+        // Get monthly user growth data
+        $userGrowth = User::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', date('Y'))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Get monthly revenue data 
+        $revenueTrends = Order::selectRaw('MONTH(created_at) as month, SUM(total) as revenue')
+            ->whereYear('created_at', date('Y'))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->pluck('revenue', 'month')
+            ->toArray();
+
+        // Format data for charts
+        $months = array_map(function ($m) {
+            return date('F', mktime(0, 0, 0, $m, 1));
+        }, range(1, 12));
+
+        $userData = array_map(function ($month) use ($userGrowth) {
+            return $userGrowth[date('n', strtotime($month))] ?? 0;
+        }, $months);
+
+        $revenueData = array_map(function ($month) use ($revenueTrends) {
+            return $revenueTrends[date('n', strtotime($month))] ?? 0;
+        }, $months);
         $users = User::all();
         $products = Product::with('Category')->get();
         $categories = Category::all();
         $stores = Store::all();
-        $revenue = Product::sum('price'); // calculation for revenue
-        $newOrders = 567; //value for new orders
+        $revenue = Order::sum('total'); // calculation for revenue
+        $newOrders = Order::all()->count(); //value for new orders
 
-        return view('admin.dashboard', compact('users', 'products', 'categories', 'stores', 'revenue', 'newOrders'));
+        return view('admin.dashboard', compact(
+            'users',
+            'months',
+            'userGrowth',
+            'revenueTrends',
+            'products',
+            'categories',
+            'stores',
+            'revenue',
+            'newOrders',
+            'userData',
+            'revenueData'
+
+        ));
     }
 
     public function editUser($id)
@@ -60,9 +105,9 @@ class AdminController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        
+
         if (Auth::user()->role === 'Admin') {
-            if ($user->role === 'Admin') { 
+            if ($user->role === 'Admin') {
                 return redirect()->route('admin.dashboard')->with('error', 'You cannot delete an admin user.');
             }
             $user->delete();

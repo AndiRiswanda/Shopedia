@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id('order_id');
-            $table->decimal('total', 12, 2);
-            $table->enum('status', ['Order Placed', 'Processing', 'Shipped', 'Delivered'])->default('Processing');
-            
+            $table->decimal('total', 12, 2);            
             //fk
             $table->foreignId('user_id')->constrained(
                 table: 'users', column: 'id', indexName: 'order_id'

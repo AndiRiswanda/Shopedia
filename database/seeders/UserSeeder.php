@@ -16,19 +16,16 @@ class UserSeeder extends Seeder
 
     private function getDefaultStorePic()
     {
-        return 'store_profile_pics/DEFAULT DONT DELETE THIS PLEASE.png';
+        return 'images/DEFAULT DONT DELETE THIS PLEASE.jpg';
     }
 
-    private function getDefaultBanner()
-    {
-        return 'store_banners/DEFAULT DONT DELETE THIS PLEASE.jpg';
-    }
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+
         
         $users = User::all();
         $products = Product::all();
@@ -42,6 +39,8 @@ class UserSeeder extends Seeder
             );
         });
 
+        // ADMIN
+
         $admin = User::create([
             'name' => 'ImTheAdmin',
             'email' => 'adminadmingod@gmail.com',
@@ -51,10 +50,35 @@ class UserSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
+        Store::create([
+            'store_name' => 'IM the Admin Lol',
+            'store_desc' => 'IM THE ADMIN WDYM',
+            'user_id' => $admin->id,
+            'profile_url' => $this->getDefaultStorePic(),
+        ]);
+
         Cart::create([
             'user_id' => $admin->id,
         ]);
 
+
+        // 100 users
+        for ($i = 0; $i < 100; $i++) {
+            $user = User::create([
+                'name' => 'user ' . $i,
+                'email' => 'user' . $i . '@example.com',
+                'email_verified_at' => now(),
+                'role' => 'Buyer',
+                'password' => Hash::make('password'),
+                'profile_url' => 'images/DefaultProfilePic/Shopedia Profile-05-01.png',
+                'remember_token' => Str::random(10),
+                'created_at' => now()->subDays(rand(0, 365)),
+            ]);
+
+            Cart::create([
+                'user_id' => $user->id,
+            ]);
+        }
         
         $user0 = User::create([
             'name' => 'Andi Riswanda',
@@ -88,7 +112,6 @@ class UserSeeder extends Seeder
             'store_desc' => 'Indonesia Best Electronics.',
             'user_id' => $user->id,
             'profile_url' => $this->getDefaultStorePic(),
-            'banner_url' => $this->getDefaultBanner()
         ]);
 
         $user2 = User::create([
@@ -110,7 +133,6 @@ class UserSeeder extends Seeder
             'user_id' => $user2->id,
             'catch' => 'Indonesia Second Best Electronics.',
             'profile_url' => $this->getDefaultStorePic(),
-            'banner_url' => $this->getDefaultBanner()
         ]);
 
         

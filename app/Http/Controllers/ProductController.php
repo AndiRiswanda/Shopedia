@@ -15,11 +15,45 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
 
+     
+     public function search(Request $request)
+     {
+         $query = $request->input('query');
+         $sort = $request->input('sort');
+         $minPrice = $request->input('price_min');
+         $maxPrice = $request->input('price_max');
+         $categoryId = $request->input('category');
+     
+         $products = Product::query()
+             ->with(['category', 'productImages'])
+             ->where('product_name', 'LIKE', "%{$query}%")
+             // Apply category 
+             ->when($categoryId, function ($query) use ($categoryId) {
+                 return $query->where('category_id', $categoryId);
+             })
+             // Apply price 
+             ->when($minPrice !== null, function ($query) use ($minPrice) {
+                 return $query->where('price', '>=', $minPrice);
+             })
+             ->when($maxPrice !== null, function ($query) use ($maxPrice) {
+                 return $query->where('price', '<=', $maxPrice);
+             })
+             // Apply sorting
+             ->when($sort, function ($query) use ($sort) {
+                 return match ($sort) {
+                     'price_asc' => $query->orderBy('price', 'asc'),
+                     'price_desc' => $query->orderBy('price', 'desc'),
+                     'newest' => $query->orderBy('created_at', 'desc'),
+                     default => $query
+                 };
+             })
+             ->paginate(12);
+     
+         $categories = Category::all();
+     
+         return view('search.results', compact('products', 'categories', 'query'));
+     }
     /**
      * Show the form for creating a new resource.
      */
@@ -68,7 +102,6 @@ class ProductController extends Controller
             'product_id' => $product->product_id,
             'change_type' => 'Restock',
             'quantity_chance' => $product->stock,
-            'chance_date' => now()
         ]);
 
         ProductImage::create([
@@ -90,13 +123,16 @@ class ProductController extends Controller
     {
 
         $product->averageRating = $product->reviews->avg('rating');
-        $reviews = $product->reviews()->paginate(5);
+        $reviews = $product->reviews()->latest()->paginate(5);
         return view('product.show', compact(['product', 'reviews']));
     }
 
     public function showSeller(Product $product)
     {
-        return view('seller.showProduct', compact('product'));
+
+        $reviews = $product->reviews()->latest()->paginate(5);
+
+        return view('seller.showProduct', compact('product', 'reviews'));
     }
     /**
      * Show the form for editing the specified resource.
@@ -120,7 +156,7 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,category_id',
             'image' => 'nullable|array|max:5', // Max 5 images
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg|max:10240', // Validate each
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg|max:10240', //10 MB
         ]);
         $oldStock = $product->stock;
 
@@ -167,14 +203,12 @@ class ProductController extends Controller
                 'product_id' => $product->product_id,
                 'change_type' => 'Restock',
                 'quantity_chance' => $stockChange,
-                'chance_date' => now()
             ]);
         } elseif ($stockChange < 0) {
             InventoryLog::create([
                 'product_id' => $product->product_id,
                 'change_type' => 'Sold',
                 'quantity_chance' => abs($stockChange),
-                'chance_date' => now()
             ]);
         }
         if (Auth::user()->role == 'Seller') {
@@ -185,7 +219,8 @@ class ProductController extends Controller
         return redirect()->route('product.show', ['product' => $product->product_id])->with('success', 'Product updated successfully!');
     }
 
-    public function showStore(Store $store) {
+    public function showStore(Store $store)
+    {
         return view('product.showStore', compact('store'));
     }
 
@@ -202,10 +237,10 @@ class ProductController extends Controller
             unlink(public_path($image->image_url));
         }
 
-        
+
         $product->delete();
 
-        
+
         $redirectRoutes = [
             'Admin' => 'admin.dashboard',
             'Seller' => 'store.index',

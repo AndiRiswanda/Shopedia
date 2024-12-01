@@ -24,8 +24,8 @@ class CategorySeeder extends Seeder
         ]);
         
         Category::create([
-            'category_name' => 'Home & Kitchen',
-            'category_desc' => 'Furniture, appliances, and cookware.'
+            'category_name' => 'Figure & Collectibles',
+            'category_desc' => 'Figurines, action figures, and collectible items.'
         ]);
         
         Category::create([
@@ -34,29 +34,10 @@ class CategorySeeder extends Seeder
         ]);
         
         Category::create([
-            'category_name' => 'Beauty & Personal Care',
-            'category_desc' => 'Cosmetics, skincare, and grooming.'
-        ]);
-        
-        Category::create([
-            'category_name' => 'Sports & Outdoors',
-            'category_desc' => 'Gear and equipment for outdoor activities.'
-        ]);
-        
-        Category::create([
-            'category_name' => 'Toys & Games',
-            'category_desc' => 'Toys, puzzles, and board games for all ages.'
-        ]);
-        
-        Category::create([
             'category_name' => 'Health & Wellness',
             'category_desc' => 'Supplements, fitness equipment, and health products.'
         ]);
         
-        Category::create([
-            'category_name' => 'Automotive',
-            'category_desc' => 'Car accessories and tools.'
-        ]);
         
         Category::create([
             'category_name' => 'Pets',

@@ -13,11 +13,12 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('product/{product}', [ProductController::class, 'show'])
 ->name('product.show');
-Route::get('product/store/{store}', [ProductController::class, 'showStore'])
+Route::get('product/ini/store/{store}', [ProductController::class, 'showStore'])
 ->name('product.show.store');
 
 Route::middleware('guest')->group(function () {
@@ -94,5 +95,7 @@ Route::middleware(['auth', 'seller'])->group(function () {
     Route::resource('product', ProductController::class)->except(['show']);
     Route::get('seller/product/{product}', [ProductController::class, 'showSeller'])
         ->name('product.show.seller');
-    Route::get('store/orders/{order}', [OrderController::class, 'showSeller'])->name('order.show.seller');
+    Route::get('store\orders\{store}', [OrderController::class, 'showSeller'])->name('order.show.seller');
+    Route::patch('/orders/{order}/ship', [CartController::class, 'markAsShipped'])
+    ->name('orders.ship');
 });

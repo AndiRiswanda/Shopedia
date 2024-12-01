@@ -13,7 +13,8 @@ class Orderdetail extends Model
         'order_id',
         'product_id',
         'quantity',
-        'price'
+        'price',
+        'status',
     ];
 
     //realationship

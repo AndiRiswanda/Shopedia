@@ -1,43 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Cart - Shopedia</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .custom-shadow {
-            box-shadow: 0 4px 30px rgba(167, 139, 250, 0.15);
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-        }
-        
-        .purple-gradient {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-        }
-        
-        .cart-item-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .cart-item-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(167, 139, 250, 0.2);
-        }
-        
-        .quantity-input {
-            background: linear-gradient(to right, #f3f4f6, #ffffff);
-        }
-    </style>
-</head>
-<body class="gradient-bg min-h-screen">
-    <div class="relative">
-        <div class="bg-gradient-to-r from-purple-400 to-purple-900 h-40 md:h-48 flex items-center justify-center text-white">
-            <div class="absolute inset-0 bg-cover bg-center opacity-30"
-                style="background-position: center 82%; background-image: url('{{ asset('images/BackroundForBanner.jpg') }}');" >
+<x-main.app>
+    
+
+    <div class="relative overflow-hidden">
+        <div class="bg-gradient-to-r from-purple-400 to-purple-900 rounded-2xl h-40 md:h-48 flex items-center justify-center text-white overflow-hidden">
+            <div class="absolute inset-0 bg-cover bg-center opacity-30 rounded-2xl"
+                style="background-position: center 82%; background-image: url('{{ asset('images/BackroundForBanner2.jpg') }}');" >
             </div>
             <div>
                 <h1 class="relative text-3xl md:text-4xl font-bold">Shopedia</h1>
@@ -197,5 +164,33 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+</x-main.app>
+
+
+
+<style>
+    .custom-shadow {
+        box-shadow: 0 4px 30px rgba(167, 139, 250, 0.15);
+    }
+    
+    .gradient-bg {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    }
+    
+    .purple-gradient {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+    
+    .cart-item-hover {
+        transition: all 0.3s ease;
+    }
+    
+    .cart-item-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(167, 139, 250, 0.2);
+    }
+    
+    .quantity-input {
+        background: linear-gradient(to right, #f3f4f6, #ffffff);
+    }
+</style>

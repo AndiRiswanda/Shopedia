@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('inventory_logs', function (Blueprint $table) {
             $table->id('log_id'); // Primary key
             $table->string('change_type'); // 'Restock' or 'Sold'
-            $table->integer('quantity_chance'); // The quantity change (can be negative or positive)
-            $table->timestamp('chance_date')->useCurrent(); // Timestamp for the change, defaulting to current time
-            
+            $table->integer('quantity_chance'); // The quantity change (can be negative or positive)            
             //FK
             $table->foreignId('product_id')->constrained(
                 table: 'products', column: 'product_id', indexName: 'inventory_logs_product_id'

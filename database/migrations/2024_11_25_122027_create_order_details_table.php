@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('order_details', function (Blueprint $table) {
             $table->id('order_detail_id');
             $table->integer('quantity');
-            
+            $table->enum('status', ['Order Placed', 'Processing', 'Shipped', 'Delivered'])->default('Processing');
+
             //fk
             $table->foreignId('order_id')->constrained(
                 table: 'orders', column: 'order_id', indexName: 'order_detail_order_id'

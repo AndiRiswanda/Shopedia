@@ -1,13 +1,4 @@
-<!-- store/show.blade.php -->
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $store->store_name }} - Shopedia</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<x-main.app>
     <style>
         .store-gradient {
             background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
@@ -20,30 +11,40 @@
         .product-card-hover:hover {
             transform: translateY(-5px);
         }
+        .store-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+            border-radius: inherit;
+        }
+    
+        .store-gradient {
+            position: relative;
+        }
+    
+        .store-gradient > * {
+            position: relative;
+            z-index: 1;
+        }
     </style>
-</head>
-
-<body class="bg-gray-50">
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-lg fixed w-full z-50">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex justify-between items-center">
-                <a href="{{ route('Home') }}" class="flex items-center space-x-2">
-                    <img src="{!! asset('images/Shopedia Text Logo/4x/Layer 1@4x.png') !!}" class="h-8" alt="Shopedia">
-                </a>
-            </div>
-        </div>
-    </nav>
-
     <!-- Store Banner -->
-    <div class="store-gradient pt-20"
-        style="background-image: url('{{ Storage::url($store->banner_url) }}'); background-size: cover; background-position: center;">
-        <div class="container mx-auto px-4 py-12">
+    
+    <!-- Store Banner -->
+    <div class="store-gradient pt-20 rounded-2xl" 
+        style="background-image: url('{{ $store->banner_url ? Storage::url($store->banner_url) : asset('images/DEFAULT DONT DELETE THIS PLEASE.jpg') }}'); 
+        background-size: cover; 
+        background-position: center;"><div class="container mx-auto px-4 py-12">
             <div class="flex items-center space-x-8">
-                <div class="w-32 h-32 rounded-full bg-white p-2 shadow-xl">
-                    <img src="{{ asset('storage/' . $store->profile_url) }}"
-                        class="w-full h-full object-cover rounded-full" alt="{{ $store->store_name }}">
-                </div>
+                <a href="{{ route('product.show.store', $store) }}"
+                    class="w-20 h-20 rounded-full overflow-hidden hover:opacity-90 transition-opacity border-4 border-white">
+                    <img src="{{ asset('storage/' . $store->profile_url) }}" alt="{{ $store->store_name }}"
+                        class="w-full h-full object-cover">
+                </a>
+
                 <div class="text-white">
                     <h1 class="text-4xl font-bold mb-2">{{ $store->store_name }}</h1>
                     <p class="text-purple-100 text-lg">{{ $store->catch }}</p>
@@ -90,8 +91,9 @@
                             <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
                                 ${{ number_format($product->price, 2) }}
                             </span>
-                            @if(Auth::user() && Auth::user()->wishlists && Auth::user()->wishlists->count() > 0)
-                                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            @if (Auth::user() && Auth::user()->wishlists && Auth::user()->wishlists->count() > 0)
+                                <span
+                                    class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                                     {{ Auth::user()->wishlists->count() }}
                                 </span>
                             @endif
@@ -117,19 +119,13 @@
             <div class="text-center">
                 <h2 class="text-2xl font-bold text-purple-800 mb-6">Contact {{ $store->store_name }}</h2>
                 <div class="flex justify-center space-x-6">
-                    <a href="mailto:{{ $store->email }}"
+                    <a href="mailto:{{ $store->user->email }}"
                         class="flex items-center text-purple-600 hover:text-purple-800">
                         <i class="fas fa-envelope mr-2"></i>
                         <span>Email Us</span>
-                    </a>
-                    <a href="tel:{{ $store->phone }}" class="flex items-center text-purple-600 hover:text-purple-800">
-                        <i class="fas fa-phone mr-2"></i>
-                        <span>Call Us</span>
                     </a>
                 </div>
             </div>
         </div>
     </div>
-</body>
-
-</html>
+</x-main.app>

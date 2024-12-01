@@ -6,7 +6,7 @@ use App\Models\Store;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Cart;
-use App\Models\Orderdetail;
+use App\Models\Review;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,17 +20,48 @@ class StoreController extends Controller
     public function index()
     {
         $store = Auth::user()->store;
-        $products = $store->products;
+        $products = $store->products()->orderBy('created_at', 'desc')->get();
         $orders = collect();
-        
+
         foreach ($products as $product) {
             foreach ($product->orderDetails as $orderDetail) {
                 $orders->push($orderDetail->order);
             }
         }
 
+        // Average Order Value
+        $averageOrderValue = $orders->avg('total') ?? 0;
+
+        // Top Selling Category
+        $topCategory = Category::select('categories.category_id', 'categories.category_name')
+        ->join('products', 'categories.category_id', '=', 'products.category_id')
+        ->join('order_details', 'products.product_id', '=', 'order_details.product_id')
+        ->where('products.store_id', $store->store_id)
+        ->groupBy('categories.category_id', 'categories.category_name')
+        ->orderByRaw('COUNT(*) DESC')
+        ->first();
+
+        // Average Rating
+        $averageRating = Review::whereHas('products', function ($query) use ($store) {
+            $query->where('store_id', $store->store_id);
+        })->avg('rating') ?? 0;
+
+        // Total Stock Value
+        $totalStockValue = $products->sum(function ($product) {
+            return $product->price * $product->stock;
+        });
+        
         $category = Category::all();
-        return view('seller.dashboard', compact('orders', 'store', 'category', 'products'));
+        return view('seller.dashboard', compact(
+            'store',
+            'products',
+            'orders',
+            'category',
+            'averageOrderValue',
+            'topCategory',
+            'averageRating',
+            'totalStockValue'
+        ));
     }
 
     /**
@@ -43,7 +74,7 @@ class StoreController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -71,20 +102,20 @@ class StoreController extends Controller
         $profilePicPath = $request->file('store_profile_pic')->store('store_profile_pics', 'public');
 
         // Handle store banner - always use default if not provided
-        $bannerPath = $request->hasFile('store_banner') 
+        $bannerPath = $request->hasFile('store_banner')
             ? $request->file('store_banner')->store('store_banners', 'public')
             : 'images/BackroundForBanner.jpg';
 
 
         // Create user store
-        $user->store()->create([  
-            'user_id' => $user->id,  
-            'store_name' => $request->store_name,  
+        $user->store()->create([
+            'user_id' => $user->id,
+            'store_name' => $request->store_name,
             'store_desc' => $request->store_desc,
             'profile_url' => $profilePicPath,
             'banner_url' => $bannerPath,
         ]);
-        
+
         Cart::create([
             'user_id' => $user->id,
         ]);

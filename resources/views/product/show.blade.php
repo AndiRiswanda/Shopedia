@@ -1,43 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<x-main.app>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <title>Product Page</title>
-</head>
-
-<body class="bg-purple-50">
-    <!-- Store Header -->
-    <div class="bg-purple-600 text-white py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div class="shrink-0 transform hover:scale-110 transition duration-300">
-                    <button onclick="window.history.back()"
-                        class="w-40 bg-purple-500 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>back</span>
-                    </button>
-                </div>
-
-                <div class="flex items-center space-x-4">
-
-                    <i class="fas fa-store text-2xl"></i>
-                    <div>
-                        <h2 class="text-xl font-bold">{{ $product->store->store_name }}</h2>
-                        <p class="text-purple-200 text-sm">{{ $product->store->catch }}</p>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
-    </div>
-
-    <x-shopedia.alert />
 
     <!-- Main Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -102,7 +64,7 @@
                             </div>
 
                         </div>
-                        <span class="text-3xl font-bold text-purple-600">{{ $product->price }}</span>
+                        <span class="text-3xl font-bold text-purple-600">Rp {{ $product->price }}</span>
                     </div>
 
                     <p class="text-gray-600 mb-6">
@@ -112,11 +74,10 @@
                     <!-- Store Information -->
                     <div class="bg-purple-50 p-4 rounded-xl mb-6">
                         <h3 class="font-medium text-purple-600 mb-2">Store Information</h3>
-
                         <!-- Store Banner -->
                         <div class="mb-4">
-                            <a href="{{ route('store.show', $product->store) }}">
-                                <img src="{{ asset('storage/' . $product->store->banner_url) }}"
+                            <a href="{{ route('product.show.store', $product->store) }}">
+                                <img src="{{ $product->store->banner_url ? asset('storage/' . $product->store->banner_url): asset('images/DEFAULT DONT DELETE THIS PLEASE.jpg') }}"
                                     alt="{{ $product->store->store_name ?? 'Store Banner' }}"
                                     class="w-full h-32 object-cover rounded-lg hover:opacity-90 transition-opacity">
                             </a>
@@ -183,19 +144,69 @@
                 </div>
             </div>
 
+            <div class="p-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold mb-4">Product Reviews</h3>
+                
+                @auth
+                    @php
+                        $hasDeliveredOrder = Auth::user()->orders()
+                            ->whereHas('orderDetail', function($query) use ($product) {
+                                $query->where('product_id', $product->product_id)
+                                    ->where('status', 'Delivered');
+                            })->exists();
+                    @endphp
+        
+                    @if($hasDeliveredOrder)
+                        <form action="{{ route('reviews.store') }}" method="POST" class="mb-6" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+                            
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                                <div class="flex space-x-2">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <input type="radio" name="rating" value="{{ $i }}" id="rating-{{ $i }}" class="hidden peer">
+                                        <label for="rating-{{ $i }}" class="cursor-pointer text-2xl text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-400">
+                                            ★
+                                        </label>
+                                    @endfor
+                                </div>
+                            </div>
+        
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+                                <textarea name="comment" rows="4" 
+                                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                    placeholder="Share your thoughts about this product..."></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
+                                <input type="file" name="image" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                            </div>
+        
+                            <button type="submit" 
+                                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                Submit Review
+                            </button>
+                        </form>
+                    @else
+                    @endif
+                @else
+                @endauth
+            </div>
+
             <!-- Reviews Section -->
             <div class="border-t border-gray-200 px-8 py-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
 
                 <!-- Review Cards -->
                 <div class="space-y-6">
-                    @foreach ($reviews->take(5) as $review)
-                        <!-- Limit to 5 reviews -->
+                    @forelse ($reviews as $review)
                         <div class="bg-purple-50 rounded-xl p-6">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center space-x-4">
                                     <div class="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center">
-
                                         @if ($review->users->profile_url)
                                             <img src="{{ asset($review->users->profile_url) }}"
                                                 alt="{{ $review->users->name }}"
@@ -203,45 +214,50 @@
                                         @else
                                             <span class="text-purple-600 font-medium">
                                                 {{ strtoupper(substr($review->users->name, 0, 1)) }}
-                                                {{ strtoupper(substr(explode(' ', $review->users->name)[1] ?? '', 0, 1)) }}
                                             </span>
                                         @endif
                                     </div>
 
                                     <div>
-                                        <!-- Display Reviewer's Name -->
                                         <h4 class="font-medium text-gray-900">{{ $review->users->name }}</h4>
-
-                                        <!-- Star Rating -->
-                                        <div class="flex text-yellow-400 text-sm">
+                                        <div class="flex text-yellow-400">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 @if ($review->rating >= $i)
-                                                    <i class="fas fa-star"></i> <!-- Full star -->
+                                                    <i class="fas fa-star"></i>
                                                 @else
-                                                    <i class="far fa-star"></i> <!-- Empty star -->
+                                                    <i class="far fa-star"></i>
                                                 @endif
                                             @endfor
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Time since review -->
                                 <span class="text-sm text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
                             </div>
-                            <p class="text-gray-600">
-                                {{ \Illuminate\Support\Str::limit($review->comment, 150) }} <!-- Limit review text -->
-                            </p>
+                            
+                            <!-- Review Content -->
+                            <div class="space-y-4">
+                                <p class="text-gray-600">
+                                    {{ \Illuminate\Support\Str::limit($review->comment, 150) }}
+                                </p>
+                                
+                                @if($review->review_pic)
+                                    <div class="mt-4">
+                                        <img src="{{ asset($review->review_pic) }}" 
+                                            alt="Review image" 
+                                            class="rounded-lg max-h-48 object-cover">
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                    @endforeach
+                    @empty
+                        <p class="text-gray-500 text-center py-8">No reviews yet</p>
+                    @endforelse
                 </div>
 
-                @if ($product->reviews->count() > 5)
-                <a href="{{ $reviews->nextPageUrl() }}" 
-                   class="mt-6 w-full py-3 border border-purple-600 text-purple-600 rounded-xl font-medium hover:bg-purple-50 transition-colors text-center block">
-                    Load More Reviews
-                </a>
-            @endif
-
-
+                <!-- Pagination -->
+                <div class="mt-6">
+                    {{ $reviews->links() }}
+                </div>
             </div>
         </div>
 
@@ -256,6 +272,4 @@
                 });
             });
         </script>
-</body>
-
-</html>
+</x-main.app>

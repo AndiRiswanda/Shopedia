@@ -1,11 +1,15 @@
-<x-app-layout>
-    <x-shopedia.alert />
-    <div class="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-purple-600 to-purple-900 text-white py-6">
-            <div class="container mx-auto px-6">
-                <h1 class="text-3xl font-bold">My Wishlist</h1>
-                <p class="text-purple-200">Your favorite products in one place</p>
+<x-main.app>
+    <div class="min-h-screen bg-gradient-to-br  from-purple-50 to-purple-100">
+
+        <div class="relative overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-400 to-purple-900 rounded-2xl h-40 md:h-48 flex items-center justify-center text-white overflow-hidden">
+                <div class="absolute inset-0 bg-cover bg-center opacity-30 rounded-2xl"
+                    style="background-position: center 82%; background-image: url('{{ asset('images/BackroundForBanner2.jpg') }}');" >
+                </div>
+                <div>
+                    <h1 class="relative text-3xl md:text-4xl font-bold">Wishlist</h1>
+                    <h3 class="text-center">Dream big, add to your wishlist.</h3>
+                </div>
             </div>
         </div>
 
@@ -90,4 +94,4 @@
             @endif
         </div>
     </div>
-</x-app-layout>
+</x-main.app>
