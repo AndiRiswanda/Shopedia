@@ -69,7 +69,7 @@
 
                                 <div class="flex items-center justify-between">
                                     <span class="text-2xl font-bold text-purple-600">
-                                        RM {{ number_format($wishlist->product->price, 2) }}
+                                        Rp {{ number_format($wishlist->product->price, 2) }}
                                     </span>
                                     
                                     <!-- Add to Cart Form -->

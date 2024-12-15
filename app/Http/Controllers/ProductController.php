@@ -16,44 +16,46 @@ class ProductController extends Controller
      * Display a listing of the resource.
      */
 
-     
-     public function search(Request $request)
-     {
-         $query = $request->input('query');
-         $sort = $request->input('sort');
-         $minPrice = $request->input('price_min');
-         $maxPrice = $request->input('price_max');
-         $categoryId = $request->input('category');
-     
-         $products = Product::query()
-             ->with(['category', 'productImages'])
-             ->where('product_name', 'LIKE', "%{$query}%")
-             // Apply category 
-             ->when($categoryId, function ($query) use ($categoryId) {
-                 return $query->where('category_id', $categoryId);
-             })
-             // Apply price 
-             ->when($minPrice !== null, function ($query) use ($minPrice) {
-                 return $query->where('price', '>=', $minPrice);
-             })
-             ->when($maxPrice !== null, function ($query) use ($maxPrice) {
-                 return $query->where('price', '<=', $maxPrice);
-             })
-             // Apply sorting
-             ->when($sort, function ($query) use ($sort) {
-                 return match ($sort) {
-                     'price_asc' => $query->orderBy('price', 'asc'),
-                     'price_desc' => $query->orderBy('price', 'desc'),
-                     'newest' => $query->orderBy('created_at', 'desc'),
-                     default => $query
-                 };
-             })
-             ->paginate(12);
-     
-         $categories = Category::all();
-     
-         return view('search.results', compact('products', 'categories', 'query'));
-     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $sort = $request->input('sort');
+        $minPrice = $request->input('price_min');
+        $maxPrice = $request->input('price_max');
+        $categoryId = $request->input('category');
+        if (empty(trim($query))) {
+            return redirect()->route('Home');
+        }
+        $products = Product::query()
+            ->with(['category', 'productImages'])
+            ->where('product_name', 'LIKE', "%{$query}%")
+            // Apply category 
+            ->when($categoryId, function ($query) use ($categoryId) {
+                return $query->where('category_id', $categoryId);
+            })
+            // Apply price 
+            ->when($minPrice !== null, function ($query) use ($minPrice) {
+                return $query->where('price', '>=', $minPrice);
+            })
+            ->when($maxPrice !== null, function ($query) use ($maxPrice) {
+                return $query->where('price', '<=', $maxPrice);
+            })
+            // Apply sorting
+            ->when($sort, function ($query) use ($sort) {
+                return match ($sort) {
+                    'price_asc' => $query->orderBy('price', 'asc'),
+                    'price_desc' => $query->orderBy('price', 'desc'),
+                    'newest' => $query->orderBy('created_at', 'desc'),
+                    default => $query
+                };
+            })
+            ->paginate(12);
+
+        $categories = Category::all();
+
+        return view('search.results', compact('products', 'categories', 'query'));
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -108,10 +110,6 @@ class ProductController extends Controller
             'product_id' => $product->product_id,
             'image_url' => $imagePath
         ]);
-
-
-
-
 
         return redirect()->back()->with('success', 'Product added successfully!');
     }

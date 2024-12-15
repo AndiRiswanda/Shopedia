@@ -80,7 +80,7 @@ class StoreController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|confirmed|min:8',
             'store_name' => 'required|string|max:255',
-            'store_desc' => 'required|string|max:255',
+            'store_desc' => 'required|string|max:1000',
             'store_profile_pic' => 'required|image|max:10240', // 10MB 
             'store_banner' => 'nullable|image|max:10240', // Optional, 
         ]);
@@ -88,8 +88,6 @@ class StoreController extends Controller
         $formattedNum = str_pad(rand(1, 6), 2, '0', STR_PAD_LEFT);
         $profileUrl = "images/DefaultProfilePic/Shopedia Profile-{$formattedNum}-01.png";
 
-
-        // Create User
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -98,16 +96,15 @@ class StoreController extends Controller
             'profile_url' => $profileUrl
         ]);
 
-        // Handle store profile picture
+        // store profile picture
         $profilePicPath = $request->file('store_profile_pic')->store('store_profile_pics', 'public');
 
-        // Handle store banner - always use default if not provided
+        // store banner
         $bannerPath = $request->hasFile('store_banner')
             ? $request->file('store_banner')->store('store_banners', 'public')
             : 'images/BackroundForBanner.jpg';
 
 
-        // Create user store
         $user->store()->create([
             'user_id' => $user->id,
             'store_name' => $request->store_name,
@@ -148,10 +145,10 @@ class StoreController extends Controller
     {
         $validated = $request->validate([
             'store_name' => 'required|string|max:255',
-            'store_desc' => 'required|string|max:255',
+            'store_desc' => 'required|string|max:1000',
             'catch' => 'nullable|string',
-            'profile_url' => 'nullable|image|max:10240', // 10MB max like your store method
-            'banner_url' => 'nullable|image|max:10240', // 10MB max like your store method
+            'profile_url' => 'nullable|image|max:10240', // 10MB max 
+            'banner_url' => 'nullable|image|max:10240', // 10MB max 
         ]);
 
         $store = Auth::user()->store;
@@ -179,7 +176,7 @@ class StoreController extends Controller
 
         // Handle banner upload
         if ($request->hasFile('banner_url')) {
-            // Delete old banner if it exists and isn't the default banner
+            // Delete old banner
             if ($store->banner_url && $store->banner_url !== 'images/BackroundForBanner.jpg') {
                 Storage::disk('public')->delete($store->banner_url);
             }

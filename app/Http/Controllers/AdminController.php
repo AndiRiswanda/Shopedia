@@ -16,7 +16,7 @@ class AdminController extends Controller
     public function index()
     {
 
-        // Get monthly user growth data
+        
         $userGrowth = User::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->whereYear('created_at', date('Y'))
             ->groupBy('month')
@@ -25,7 +25,7 @@ class AdminController extends Controller
             ->pluck('count', 'month')
             ->toArray();
 
-        // Get monthly revenue data 
+        
         $revenueTrends = Order::selectRaw('MONTH(created_at) as month, SUM(total) as revenue')
             ->whereYear('created_at', date('Y'))
             ->groupBy('month')
@@ -77,7 +77,7 @@ class AdminController extends Controller
 
     public function updateUser(Request $request, $id)
     {
-        // Validate input fields
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
@@ -86,17 +86,15 @@ class AdminController extends Controller
 
         $user = User::findOrFail($id);
 
-        // Update the user details
+        
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->role = 'Buyer';
 
-        // Update the password if it's provided
         if ($request->filled('password')) {
             $user->password = Hash::make($request->input('password'));
         }
 
-        // Save the user data
         $user->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'User updated successfully.');

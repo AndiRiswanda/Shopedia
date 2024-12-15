@@ -3,7 +3,7 @@
     <x-app.banner :store="$store" />
     <x-app.seller-header :user="Auth::user()" :store="$store" />
     <x-shopedia.alert />
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden ">
             <div class="p-6 text-gray-900">
                 <main class="container mx-auto px-6 py-10">
@@ -135,7 +135,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-lg font-medium text-indigo-800">Total Stock Value</h4>
-                                    <p class="text-xl font-bold text-indigo-900">
+                                    <p class="text-md font-bold text-indigo-900">
                                         Rp {{ number_format($totalStockValue, 2) }}
                                     </p>
                                     <p class="text-sm text-indigo-600 mt-1">Current inventory worth</p>

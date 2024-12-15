@@ -81,7 +81,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard/edit/{id}', [AdminController::class, 'editUser'])->name('admin.user.edit');
     Route::post('/admin/dashboard/edit{id}', [AdminController::class, 'updateUser'])->name('admin.user.update');
     Route::delete('/admin/dashboard/delete/{id}', [AdminController::class, 'destroy'])->name('admin.user.destroy');
-
     Route::get('admin/dashboard/edit/product/{product}', [ProductController::class, 'edit'])
         ->name('product.edit.admin');
     Route::put('admin/dashboard/update/product/{product}', [ProductController::class, 'update'])

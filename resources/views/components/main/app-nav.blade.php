@@ -107,7 +107,7 @@
                 <div class="flex space-x-12 justify-center">
                     @foreach ($categories as $category)
                         <a href="{{ route('category.show', $category) }}"
-                            class="text-purple-600 hover:text-purple-600 transition-colors duration-200 font-medium flex items-center space-x-2">
+                            class="text-purple-600 hover:text-purple-600 transition-scale duration-200 font-medium flex items-center space-x-2 hover:scale-110">
                             <i
                                 class="fas fa-{{ str_contains(strtolower($category->category_name), 'electronics')
                                     ? 'laptop'

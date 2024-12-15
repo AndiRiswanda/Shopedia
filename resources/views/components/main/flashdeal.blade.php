@@ -1,4 +1,4 @@
- @props(['products'])
+@props(['products'])
  
  <!-- Flash Deals Section -->
  <section class="py-12 bg-gradient-to-b from-purple-50 to-white">
@@ -23,7 +23,10 @@
             </div>
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach ($products->random(6) as $product)
+                @foreach ($products->filter(function($product) {
+                    return $product->productImages->isNotEmpty() && 
+                           !str_contains($product->productImages->first()->image_url, 'via.placeholder.com');
+                })->random(6) as $product)
                     @php
                         $discounts = [10, 20, 30, 40, 50];
                         $randomDiscount = $discounts[array_rand($discounts)];
@@ -90,10 +93,10 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <span class="text-2xl font-bold text-purple-600">
-                                        Rp {{ number_format($discountedPrice, 2) }}
+                                        Rp {{ number_format($product->price, 2) }}
                                     </span>
                                     <div class="text-sm text-gray-400 line-through">
-                                        Rp {{ number_format($product->price, 2) }}
+                                        Rp {{ number_format($product->price * (1 + $randomDiscount/100), 2) }}
                                     </div>
                                 </div>
                                 <div class="bg-green-100 px-3 py-1 rounded-full">

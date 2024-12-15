@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', [HomeController::class, 'index'])->name('Home');
 Route::get('/search', [ProductController::class, 'search'])->name('search');
 Route::get('/category/{category}', [CategoryController::class, 'show'])->name('category.show');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 
 Route::get('/dashboard', function () {

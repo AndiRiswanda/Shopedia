@@ -51,8 +51,8 @@
                                     </span>
                                 </div>
                                 <div class="mt-6 flex items-center justify-between">
-                                    <div class="text-2xl font-semibold text-purple-600">
-                                        RM {{ number_format($detail->product->price, 2) }}
+                                    <div class="text-xl font-semibold text-purple-600">
+                                        Rp {{ number_format($detail->product->price, 2) }}
                                     </div>
                                     <div class="flex items-center space-x-3 bg-gray-50 rounded-xl p-2">
                                         <form action="{{ route('cart.decrementItem', $detail->cart_detail_id) }}" method="POST" class="inline">
@@ -120,7 +120,7 @@
                         <div class="flex justify-between text-gray-600">
                             <span>Subtotal ({{ $cart->cartDetails->sum('quantity') }} items)</span>
                             <span class="font-medium">
-                                RM {{ number_format($cart->cartDetails->sum(function($detail) {
+                                Rp {{ number_format($cart->cartDetails->sum(function($detail) {
                                     return $detail->quantity * $detail->product->price;
                                 }), 2) }}
                             </span>
@@ -136,8 +136,8 @@
                         <div class="pt-6 border-t border-gray-100">
                             <div class="flex justify-between items-center">
                                 <span class="text-xl font-medium text-gray-800">Total</span>
-                                <span class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-800">
-                                    RM {{ number_format($cart->cartDetails->sum(function($detail) {
+                                <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-purple-800">
+                                    Rp {{ number_format($cart->cartDetails->sum(function($detail) {
                                         return $detail->quantity * $detail->product->price;
                                     }), 2) }}
                                 </span>

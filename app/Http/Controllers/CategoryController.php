@@ -11,6 +11,7 @@ class CategoryController extends Controller
     {
         $products = $category->products()
             ->with(['productImages'])
+            ->latest()
             ->paginate(12);
             
         return view('category.show', compact('category', 'products'));

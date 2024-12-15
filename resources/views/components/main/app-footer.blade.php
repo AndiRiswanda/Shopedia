@@ -10,9 +10,22 @@
             </a>
             <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
                 <li>
-                    <a href="#" class="hover:underline me-4 md:me-6">About</a>
+                    <a href="{{route('about')}}" class="hover:underline me-4 md:me-6 flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        About
+                    </a>
                 </li>
-                    <a href="https://www.instagram.com/andiriswandaa/" class="hover:underline">Instagram</a>
+                <li>
+                    <a href="https://www.instagram.com/andiriswandaa/" class="hover:underline me-4 md:me-6 flex items-center">
+                        <i class="fab fa-instagram mr-2"></i>
+                        Instagram
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/AndiRiswanda/Shopedia" class="hover:underline flex items-center">
+                        <i class="fab fa-github mr-2"></i>
+                        Git Hub
+                    </a>
                 </li>
             </ul>
         </div>

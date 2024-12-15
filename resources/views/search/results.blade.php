@@ -3,13 +3,12 @@
         <div class="container mx-auto px-4 py-8">
 
             <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Left Sidebar Filters -->
+                <!-- Sidebar Filters -->
                 <div class="lg:w-1/4">
                     <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-4">
                         <h3 class="text-lg font-bold text-purple-800 mb-4 flex items-center">
                             <i class="fas fa-filter mr-2"></i> Filters
                         </h3>
-                        <!-- Add this at the start of the filters section -->
                         <form id="filterForm" method="GET" action="{{ route('search') }}">
                             <input type="hidden" name="query" value="{{ $query }}">
 
@@ -17,7 +16,6 @@
                             <div class="mb-6">
                                 <h4 class="font-semibold text-gray-700 mb-3">Categories</h4>
                                 <div class="space-y-2">
-                                    <!-- Add All Categories option -->
                                     <label
                                         class="flex items-center space-x-2 text-gray-600 hover:text-purple-600 cursor-pointer">
                                         <input type="radio" name="category" value=""
@@ -146,10 +144,11 @@
                             @endforeach
                         </div>
                     @else
-                        <!-- Enhanced Empty State -->
                         <div class="text-center py-16 bg-white rounded-2xl shadow-md">
-                            <div class="mb-6 text-purple-200">
-                                <i class="fas fa-search text-8xl"></i>
+                            <div class="text-center py-8">
+                                <img src="{{ asset('images/takjumpa.jpg') }}" 
+                                     alt="No Product Found" 
+                                     class="w-64 h-64 object-contain mx-auto mb-4">
                             </div>
                             <h3 class="text-2xl font-bold text-gray-800 mb-4">
                                 No products found

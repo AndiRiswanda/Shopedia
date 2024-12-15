@@ -11,20 +11,22 @@
                     <div class="relative h-96 rounded-xl overflow-hidden mb-4 group">
                         <!-- Main product image -->
                         <img src="{{ asset($product->productImages->first()->image_url ?? '/default-image.jpg') }}"
-                            alt="Main product" class="w-full h-full object-cover">
+                            alt="Main product" class="main-product-image w-full h-full object-cover">
                         @if (Auth::user())
-                            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <div
+                                class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                 <form action="{{ route('wishlist.store') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                                    <button type="submit" 
+                                    <button type="submit"
                                         class="bg-white p-2 rounded-full shadow-lg hover:bg-purple-100 transition-colors">
                                         <i class="fas fa-heart text-purple-600"></i>
                                     </button>
                                 </form>
                             </div>
                         @else
-                            <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <div
+                                class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                 <a href="{{ route('login') }}"
                                     class="bg-white p-2 rounded-full shadow-lg hover:bg-purple-100 transition-colors">
                                     <i class="fas fa-heart text-purple-600"></i>
@@ -34,10 +36,14 @@
                     </div>
                     <!-- if multiple images -->
                     @if ($product->productImages->count() > 1)
-                        <div class="grid grid-cols-4 gap-4">
-                            @foreach ($product->productImages as $image)
-                                <img src="{{ asset($image->image_url) }}" alt="Product image"
-                                    class="rounded-lg cursor-pointer hover:ring-2 ring-purple-500 transition-all">
+                        <div class="flex space-x-2 mt-4">
+                            @foreach ($product->productImages as $index => $image)
+                                <div onclick="changeMainImage('{{ asset($image->image_url) }}', this)"
+                                    class="thumbnail-item cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-300 hover:border-purple-500"
+                                    data-index="{{ $index }}">
+                                    <img src="{{ asset($image->image_url) }}"
+                                        alt="Product thumbnail {{ $index + 1 }}" class="w-20 h-20 object-cover">
+                                </div>
                             @endforeach
                         </div>
                     @endif
@@ -64,10 +70,11 @@
                             </div>
 
                         </div>
-                        <span class="text-3xl font-bold text-purple-600">Rp {{ $product->price }}</span>
                     </div>
+                    <span class="text-3xl font-bold text-purple-600">Rp
+                        {{ number_format($product->price, 0, ',', '.') }}</span>
 
-                    <p class="text-gray-600 mb-6">
+                    <p class="text-gray-600 my-5">
                         {{ $product->description }}
                     </p>
 
@@ -77,7 +84,7 @@
                         <!-- Store Banner -->
                         <div class="mb-4">
                             <a href="{{ route('product.show.store', $product->store) }}">
-                                <img src="{{ $product->store->banner_url ? asset('storage/' . $product->store->banner_url): asset('images/DEFAULT DONT DELETE THIS PLEASE.jpg') }}"
+                                <img src="{{ $product->store->banner_url ? asset('storage/' . $product->store->banner_url) : asset('images/DEFAULT DONT DELETE THIS PLEASE.jpg') }}"
                                     alt="{{ $product->store->store_name ?? 'Store Banner' }}"
                                     class="w-full h-32 object-cover rounded-lg hover:opacity-90 transition-opacity">
                             </a>
@@ -87,7 +94,8 @@
                         <div class="space-y-2 text-sm text-gray-600">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
-                                    <a href="{{ route('product.show.store', $product->store) }}" class="w-12 h-12 rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                                    <a href="{{ route('product.show.store', $product->store) }}"
+                                        class="w-12 h-12 rounded-full overflow-hidden hover:opacity-90 transition-opacity">
                                         @if ($product->store->profile_url)
                                             <img src="{{ asset('storage/' . $product->store->profile_url) }}"
                                                 alt="{{ $product->store->store_name }}"
@@ -146,46 +154,51 @@
 
             <div class="p-6 border-t border-gray-200">
                 <h3 class="text-lg font-semibold mb-4">Product Reviews</h3>
-                
+
                 @auth
                     @php
-                        $hasDeliveredOrder = Auth::user()->orders()
-                            ->whereHas('orderDetail', function($query) use ($product) {
-                                $query->where('product_id', $product->product_id)
-                                    ->where('status', 'Delivered');
-                            })->exists();
+                        $hasDeliveredOrder = Auth::user()
+                            ->orders()
+                            ->whereHas('orderDetail', function ($query) use ($product) {
+                                $query->where('product_id', $product->product_id)->where('status', 'Delivered');
+                            })
+                            ->exists();
                     @endphp
-        
-                    @if($hasDeliveredOrder)
-                        <form action="{{ route('reviews.store') }}" method="POST" class="mb-6" enctype="multipart/form-data">
+
+                    @if ($hasDeliveredOrder)
+                        <form action="{{ route('reviews.store') }}" method="POST" class="mb-6"
+                            enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                            
+
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
                                 <div class="flex space-x-2">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <input type="radio" name="rating" value="{{ $i }}" id="rating-{{ $i }}" class="hidden peer">
-                                        <label for="rating-{{ $i }}" class="cursor-pointer text-2xl text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-400">
+                                    @for ($i = 5; $i >= 1; $i--)
+                                        <input type="radio" name="rating" value="{{ $i }}"
+                                            id="rating-{{ $i }}" class="hidden peer">
+                                        <label for="rating-{{ $i }}"
+                                            class="cursor-pointer text-2xl text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-400">
                                             ★
                                         </label>
                                     @endfor
                                 </div>
                             </div>
-        
+
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
-                                <textarea name="comment" rows="4" 
+                                <textarea name="comment" rows="4"
                                     class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
                                     placeholder="Share your thoughts about this product..."></textarea>
                             </div>
 
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
-                                <input type="file" name="image" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                <input type="file" name="image"
+                                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                             </div>
-        
-                            <button type="submit" 
+
+                            <button type="submit"
                                 class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                                 Submit Review
                             </button>
@@ -233,24 +246,27 @@
                                 </div>
                                 <span class="text-sm text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
                             </div>
-                            
+
                             <!-- Review Content -->
                             <div class="space-y-4">
                                 <p class="text-gray-600">
                                     {{ \Illuminate\Support\Str::limit($review->comment, 150) }}
                                 </p>
-                                
-                                @if($review->review_pic)
+
+                                @if ($review->review_pic)
                                     <div class="mt-4">
-                                        <img src="{{ asset($review->review_pic) }}" 
-                                            alt="Review image" 
+                                        <img src="{{ asset($review->review_pic) }}" alt="Review image"
                                             class="rounded-lg max-h-48 object-cover">
                                     </div>
                                 @endif
                             </div>
                         </div>
                     @empty
-                        <p class="text-gray-500 text-center py-8">No reviews yet</p>
+                        <div class="text-center py-8">
+                            <img src="{{ asset('images/takjumpa.jpg') }}" alt="No Reviews Found"
+                                class="w-64 h-64 object-contain mx-auto mb-4">
+                            <p class="text-gray-500">No reviews yet</p>
+                        </div>
                     @endforelse
                 </div>
 
@@ -262,14 +278,25 @@
         </div>
 
         <script>
-            $(document).ready(function() {
-                // Thumbnail click handler
-                $('.grid img').click(function() {
-                    const src = $(this).attr('src');
-                    $('.relative img').attr('src', src);
-                    $('.grid img').removeClass('ring-2');
-                    $(this).addClass('ring-2');
+            function changeMainImage(imageUrl, thumbnail) {
+
+                const mainImage = document.querySelector('.main-product-image');
+                mainImage.src = imageUrl;
+
+                document.querySelectorAll('.thumbnail-item').forEach(thumb => {
+                    thumb.classList.remove('border-purple-500');
+                    thumb.classList.add('border-transparent');
                 });
+
+                thumbnail.classList.remove('border-transparent');
+                thumbnail.classList.add('border-purple-500');
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const firstThumbnail = document.querySelector('.thumbnail-item');
+                if (firstThumbnail) {
+                    firstThumbnail.classList.add('border-purple-500');
+                }
             });
         </script>
 </x-main.app>

@@ -78,7 +78,7 @@
     <!-- Products Grid -->
     <div class="container mx-auto px-4 py-12">
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            @foreach ($store->products as $product)
+            @foreach ($store->products->sortByDesc('created_at') as $product)
                 <div class="bg-white rounded-xl shadow-md overflow-hidden product-card-hover">
                     <div class="relative h-48">
                         <a href="{{ route('product.show', $product->product_id) }}">
